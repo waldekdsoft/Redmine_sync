@@ -31,7 +31,6 @@ namespace Redmine_sync
 
         static void Main(string[] args)
         {
-
             Console.WriteLine("Started...");
             ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback (   delegate { return true; });
             string host = "http://pcredmine:3000";
@@ -54,7 +53,6 @@ namespace Redmine_sync
             parameters = new NameValueCollection { { "status_id", "*" } };
             foreach (var issue in manager.GetObjects<Issue>(parameters).Where(issue => issue.Project.Id == PROJECT_ID))
             {
-                
                 string subject = issue.Subject;
 
                 //split subject to get env and problem id
@@ -79,10 +77,11 @@ namespace Redmine_sync
                 {
                     problematicIssuesInRedmineProject.Add(item);
                 }
-
             }
 
-            Console.Write("done!");
+            Console.WriteLine("done!");
+
+
             //********************************************************************************************************/
             //read data from Excel
             var xlsx = new LinqToExcel.ExcelQueryFactory(@"C:\Users\waldekd\Documents\MOMProblems\moms.xlsx");
@@ -92,6 +91,7 @@ namespace Redmine_sync
                 Console.WriteLine("--------------------------------------------");
                 Console.WriteLine("Processing of {0}...", tabName);
                 Console.WriteLine("--------------------------------------------");
+
                 MOMEnvSettings momEnvSettings = null;
                 if (!MOM_ENV_SETTINGS.TryGetValue(tabName, out momEnvSettings))
                 {
@@ -100,9 +100,7 @@ namespace Redmine_sync
                 }
                 else
                 {
-
                     Console.WriteLine("Start processing: {0}", tabName);
-
 
                     StatItem statItem = new StatItem();
                     statItem.Env = tabName;
@@ -119,8 +117,6 @@ namespace Redmine_sync
                       }
                       select item;
 
-
-
                     IdentifiableName p = IdentifiableName.Create<Project>(PROJECT_ID);
                     foreach (var itemFromExcel in query)
                     {
@@ -130,7 +126,6 @@ namespace Redmine_sync
                         var redmineIssue = issuesInRedmineProject.Where(issueFromRedmine => issueFromRedmine.Env == tabName && issueFromRedmine.MOMProblemId == itemFromExcel.ProblemID);
                         if (redmineIssue.Count() == 0)
                         {
-
                             string details = string.Format("{0}\r\nMessage link: {1}\r\nProblem link: {2}", itemFromExcel.Details, momEnvSettings.GetMessageLink(itemFromExcel.MessageId), momEnvSettings.GetProblemLink(itemFromExcel.MessageId));
 
                             var newIssue = new Issue { Subject = subject, Project = p, Description = details };
@@ -150,11 +145,8 @@ namespace Redmine_sync
                         {
                             Console.WriteLine("Issue exists! {0}", subject);
                             statItem.AlreadyExisted++;
-                        }
-
-                       
+                        }                       
                     }
-
                     statItems.Add(statItem);
                 }
             }
