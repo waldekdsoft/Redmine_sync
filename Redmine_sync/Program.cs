@@ -15,6 +15,7 @@ namespace Redmine_sync
     {
         //private static string PROJECT = "macbi-problems";
         private static int PROJECT_ID = 65;//67 - temporary
+        private static string MOM_FILE_PATH = @"C:\Users\waldekd\Documents\MOMProblems\moms.xlsx";
 
         private static Dictionary<string, MOMEnvSettings> MOM_ENV_SETTINGS = new Dictionary<string, MOMEnvSettings>() {
             { "L058@MACBI", new MOMEnvSettings("lxc058.softsystem.pl:7701") },
@@ -26,13 +27,14 @@ namespace Redmine_sync
             { "Q397@UMICH", new MOMEnvSettings("wp397.softsystem.pl:7700") },
             { "Q486@MAYO", new MOMEnvSettings("wp486.softsystem.pl:7700") },
             { "Q501@Generic", new MOMEnvSettings("wp501.softsystem.pl:7700") },
-            { "Q507@FCS", new MOMEnvSettings("wp507.softsystem.pl:7700") }
+            { "Q507@FCS", new MOMEnvSettings("wp507.softsystem.pl:7700") },
+            { "Q26@Generic", new MOMEnvSettings("wp26.softsystem.pl:7700") }            
         };
 
         static void Main(string[] args)
         {
             Console.WriteLine("Started...");
-            ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback (   delegate { return true; });
+            ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(delegate { return true; });
             string host = "http://pcredmine:3000";
             string apiKey = "0533a992d0c093b3b1592e57e10281156ea6afde";
 
@@ -49,44 +51,33 @@ namespace Redmine_sync
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
             List<StatItem> statItems = new List<StatItem>();
 
-            Console.Write("Cache creation...");
-            parameters = new NameValueCollection { { "status_id", "*" } };
-            foreach (var issue in manager.GetObjects<Issue>(parameters).Where(issue => issue.Project.Id == PROJECT_ID))
+            Console.WriteLine("1) Add new items");
+            Console.WriteLine("2) Update items");
+            Console.ReadLine();
+
+            CreateCache(manager, issuesInRedmineProject, problematicIssuesInRedmineProject);
+            ProcessExcelFile(manager, issuesInRedmineProject, statItems);
+            ShowStats(statItems);
+        }
+
+        private static void ShowStats(List<StatItem> statItems)
+        {
+            Console.WriteLine("--------------------------------------------");
+            //show stats
+            foreach (StatItem statItem in statItems)
             {
-                string subject = issue.Subject;
-
-                //split subject to get env and problem id
-                string[] subjectSplitted = subject.Split('-');
-
-                //get env
-                string env = subjectSplitted[0].Trim(); ;
-
-                IssueItem item = new IssueItem();
-                item.Id = issue.Id;
-                item.Status = issue.Status.Name;
-                item.Desc = subject;
-                item.Env = env;
-
-                if (subjectSplitted.Length == 4)
-                {
-                    //get MOM problem is from subject
-                    item.MOMProblemId = subjectSplitted[1].Trim();
-                    issuesInRedmineProject.Add(item);
-                }
-                else
-                {
-                    problematicIssuesInRedmineProject.Add(item);
-                }
+                statItem.ShowStats();
             }
+            Console.WriteLine("--------------------------------------------");
+        }
 
-            Console.WriteLine("done!");
-
-
+        private static void ProcessExcelFile(RedmineManager manager, List<IssueItem> issuesInRedmineProject, List<StatItem> statItems)
+        {
             //********************************************************************************************************/
             //read data from Excel
-            var xlsx = new LinqToExcel.ExcelQueryFactory(@"C:\Users\waldekd\Documents\MOMProblems\moms.xlsx");
+            var xlsx = new LinqToExcel.ExcelQueryFactory(MOM_FILE_PATH);
 
-            foreach (string tabName in xlsx.GetWorksheetNames()) 
+            foreach (string tabName in xlsx.GetWorksheetNames())
             {
                 Console.WriteLine("--------------------------------------------");
                 Console.WriteLine("Processing of {0}...", tabName);
@@ -145,20 +136,46 @@ namespace Redmine_sync
                         {
                             Console.WriteLine("Issue exists! {0}", subject);
                             statItem.AlreadyExisted++;
-                        }                       
+                        }
                     }
                     statItems.Add(statItem);
                 }
             }
+        }
 
-            Console.WriteLine("--------------------------------------------");
-            //show stats
-            foreach (StatItem statItem in statItems)
+        private static void CreateCache(RedmineManager manager, List<IssueItem> issuesInRedmineProject, List<IssueItem> problematicIssuesInRedmineProject)
+        {
+            Console.Write("Cache creation...");
+            NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
+            foreach (var issue in manager.GetObjects<Issue>(parameters).Where(issue => issue.Project.Id == PROJECT_ID))
             {
-                statItem.ShowStats();
-            }
-            return;
+                string subject = issue.Subject;
 
+                //split subject to get env and problem id
+                string[] subjectSplitted = subject.Split('-');
+
+                //get env
+                string env = subjectSplitted[0].Trim(); ;
+
+                IssueItem item = new IssueItem();
+                item.Id = issue.Id;
+                item.Status = issue.Status.Name;
+                item.Desc = subject;
+                item.Env = env;
+
+                if (subjectSplitted.Length == 4)
+                {
+                    //get MOM problem is from subject
+                    item.MOMProblemId = subjectSplitted[1].Trim();
+                    issuesInRedmineProject.Add(item);
+                }
+                else
+                {
+                    problematicIssuesInRedmineProject.Add(item);
+                }
+            }
+
+            Console.WriteLine("done!");
         }
     }
 }
