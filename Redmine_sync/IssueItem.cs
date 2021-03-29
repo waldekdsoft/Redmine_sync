@@ -14,7 +14,9 @@ namespace Redmine_sync
         public string Status { get; set; }
 
         public string Env { get; set; }
-        public string MOMProblemId { get; set; }
+        /*MOM problem id*/
+        public string ProblemId { get; set; }
+        public string SenderCode { get; set; }
 
         private string desc;
         public string Desc {
