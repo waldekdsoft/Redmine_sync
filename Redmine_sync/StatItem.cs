@@ -18,6 +18,16 @@ namespace Redmine_sync
         public int AlreadyExisted { get; set; } = 0;
 
 
+        public StatItem()
+        {
+
+        }
+
+        public StatItem(string env)
+        {
+            Env = env;                 
+        }
+
         public void ShowStatsAdded()
         {
             Console.WriteLine("{0} - Added: {1} Existed: {2}", Env, Added, AlreadyExisted);
@@ -25,7 +35,7 @@ namespace Redmine_sync
 
         public void ShowStatsUpdated()
         {
-            Console.WriteLine("{0} - Updated: {1} Existed: {2}", Env, Updated, NotUpdated);
+            Console.WriteLine("{0} - Updated: {1} NotUpdated: {2}", Env, Updated, NotUpdated);
         }
 
     }

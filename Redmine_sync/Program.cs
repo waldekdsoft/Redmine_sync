@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
@@ -14,8 +15,9 @@ namespace Redmine_sync
     class Program
     {
         //private static string PROJECT = "macbi-problems";
-        private static int PROJECT_ID = 67;//65;//67 - temporary
-        private static string MOM_FILE_PATH = @"C:\Users\waldekd\Documents\MOMProblems\moms.xlsx";
+        private static int PROJECT_ID = 65;//67 - temporary
+        private static string MOM_FILES_DIR = @"C:\Users\waldekd\Documents\MOMProblems";
+        private static string MOM_FILE_PATH = MOM_FILES_DIR + @"\moms.xlsx";
 
         private static Dictionary<string, MOMEnvSettings> MOM_ENV_SETTINGS = new Dictionary<string, MOMEnvSettings>() {
             { "L058@MACBI", new MOMEnvSettings("lxc058.softsystem.pl:7701") },
@@ -47,12 +49,17 @@ namespace Redmine_sync
 
             //********************************************************************************************************/
             //write MACBI items to local list
-            
+
+
+            Console.WriteLine("0) Update based on all XLSX file from the directory");
             Console.WriteLine("1) Add new items");
             Console.WriteLine("2) Update items");
 
             switch (Console.ReadLine())
             {
+                case "0":
+                    UpdateItems(manager, true);
+                    break;
                 case "1":
                     AddNewItems(manager);
                     break;
@@ -64,14 +71,14 @@ namespace Redmine_sync
 
         }
 
-        private static void UpdateItems(RedmineManager manager)
+        private static void UpdateItems(RedmineManager manager, bool allWithinDirectory = false)
         {
             List<StatItem> statItems = new List<StatItem>();
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
 
             CreateCache(manager, issuesInRedmineProject, problematicIssuesInRedmineProject);
-            UpdateBasedOnExcelFile(manager, issuesInRedmineProject, statItems);
+            UpdateBasedOnExcelFile(manager, issuesInRedmineProject, statItems, allWithinDirectory);
             ShowStats(statItems, false);
         }
 
@@ -177,94 +184,87 @@ namespace Redmine_sync
             }
         }
 
-        private static void UpdateBasedOnExcelFile(RedmineManager manager, List<IssueItem> issuesInRedmineProject, List<StatItem> statItems)
+        private static void UpdateBasedOnExcelFile(RedmineManager manager, 
+                                                   List<IssueItem> issuesInRedmineProject, 
+                                                   List<StatItem> statItems, 
+                                                   bool allWithinDirectory)
         {
             //********************************************************************************************************/
             //read data from Excel
-            var xlsx = new LinqToExcel.ExcelQueryFactory(MOM_FILE_PATH);
-
-            foreach (string tabName in xlsx.GetWorksheetNames())
+            List<string> filesToProcess = null;
+            if (allWithinDirectory)
             {
-                Console.WriteLine("--------------------------------------------");
-                Console.WriteLine("Processing of {0}...", tabName);
-                Console.WriteLine("--------------------------------------------");
+                filesToProcess = Directory.EnumerateFiles(MOM_FILES_DIR, "*.xlsx").ToList();
+            }
+            else
+            {
+                filesToProcess = new List<string>();
+                filesToProcess.Add(MOM_FILE_PATH);
+            }
 
-                Console.WriteLine("Start processing: {0}", tabName);
+            foreach (string singleXSLXfile in filesToProcess)
+            {
+                var xlsx = new LinqToExcel.ExcelQueryFactory(singleXSLXfile);
 
-                StatItem statItem = new StatItem();
-                statItem.Env = tabName;
+                Console.WriteLine("File: {0}", singleXSLXfile);
 
-                var query =
-                  from row in xlsx.Worksheet(tabName)
-                  let item = new
-                  {
-                      ProblemID = row["Problem ID"].Cast<string>(),
-                      ProblemCode = row["Problem Code"].Cast<string>(),
-                      MessageId = row["Message ID"].Cast<string>(),
-                      EventCode = row["Event Code"].Cast<string>(),
-                      Details = row["Details"].Cast<string>(),
-                      SenderCode = row["Sender Code"].Cast<string>(),                      
-                  }
-                  select item;
-
-                IdentifiableName p = IdentifiableName.Create<Project>(PROJECT_ID);
-                foreach (var itemFromExcel in query)
+                foreach (string tabName in xlsx.GetWorksheetNames())
                 {
-                    //look for the item in RM
-                    var redmineIssue = issuesInRedmineProject.Where(issueFromRedmine => issueFromRedmine.Env == tabName && issueFromRedmine.ProblemId == itemFromExcel.ProblemID).FirstOrDefault();
+                    Console.WriteLine("--------------------------------------------");
+                    Console.WriteLine("Processing of {0}...", tabName);
+                    Console.WriteLine("--------------------------------------------");
 
-                    if (redmineIssue != null && string.IsNullOrEmpty(redmineIssue.SenderCode))
+                    StatItem statItem = new StatItem(tabName);
+                    statItem.Env = tabName;
+
+                    var query =
+                      from row in xlsx.Worksheet(tabName)
+                      let item = new
+                      {
+                          ProblemID = row["Problem ID"].Cast<string>(),
+                          ProblemCode = row["Problem Code"].Cast<string>(),
+                          MessageId = row["Message ID"].Cast<string>(),
+                          EventCode = row["Event Code"].Cast<string>(),
+                          Details = row["Details"].Cast<string>(),
+                          SenderCode = row["Sender Code"].Cast<string>(),
+                      }
+                      select item;
+
+                    IdentifiableName p = IdentifiableName.Create<Project>(PROJECT_ID);
+                    foreach (var itemFromExcel in query)
                     {
-                        if (!string.IsNullOrEmpty(itemFromExcel.SenderCode))
+                        //look for the item in RM
+                        var redmineIssue = issuesInRedmineProject.Where(issueFromRedmine => issueFromRedmine.Env == tabName && issueFromRedmine.ProblemId == itemFromExcel.ProblemID).FirstOrDefault();
+
+                        if (redmineIssue != null && string.IsNullOrEmpty(redmineIssue.SenderCode))
                         {
-                            var issue = manager.GetObject<Issue>(redmineIssue.Id.ToString(), null);
+                            if (!string.IsNullOrEmpty(itemFromExcel.SenderCode))
+                            {
+                                var issue = manager.GetObject<Issue>(redmineIssue.Id.ToString(), null);
 
-                            issue.Subject = issue.Subject + string.Format(" - {0}", itemFromExcel.SenderCode);
+                                issue.Subject = issue.Subject + string.Format(" - {0}", itemFromExcel.SenderCode);
 
-                            manager.UpdateObject(redmineIssue.Id.ToString(), issue);
-                            redmineIssue.SenderCode = itemFromExcel.SenderCode;
+                                manager.UpdateObject(redmineIssue.Id.ToString(), issue);
+                                redmineIssue.SenderCode = itemFromExcel.SenderCode;
 
-                            statItem.Updated++;
-                            //  string subject = redmineIssue.sub
-                            //string subject = string.Format("{0} - {1} - {2} - {3} - {4}", tabName, itemFromExcel.ProblemID, itemFromExcel.EventCode, itemFromExcel.ProblemCode, itemFromExcel.SenderCode);
-                        } 
+                                statItem.Updated++;
+                                //  string subject = redmineIssue.sub
+                                //string subject = string.Format("{0} - {1} - {2} - {3} - {4}", tabName, itemFromExcel.ProblemID, itemFromExcel.EventCode, itemFromExcel.ProblemCode, itemFromExcel.SenderCode);
+                            }
+                            else
+                            {
+                                statItem.NotUpdated++;
+                            }
+
+                        }
                         else
                         {
                             statItem.NotUpdated++;
                         }
-                        
+
                     }
-                    /*
-                    string subject = string.Format("{0} - {1} - {2} - {3}", tabName, itemFromExcel.ProblemID, itemFromExcel.EventCode, itemFromExcel.ProblemCode);
-
-                    //check if such the item exists in the Redmine project
-                    var redmineIssue = issuesInRedmineProject.Where(issueFromRedmine => issueFromRedmine.Env == tabName && issueFromRedmine.MOMProblemId == itemFromExcel.ProblemID);
-                    if (redmineIssue.Count() == 0)
-                    {
-                        string details = string.Format("{0}\r\nMessage link: {1}\r\nProblem link: {2}", itemFromExcel.Details, momEnvSettings.GetMessageLink(itemFromExcel.MessageId), momEnvSettings.GetProblemLink(itemFromExcel.MessageId));
-
-                        var newIssue = new Issue { Subject = subject, Project = p, Description = details };
-                        manager.CreateObject(newIssue);
-
-                        //add a new item to local cached items from redmine
-                        IssueItem item = new IssueItem();
-
-                        item.Env = tabName;
-                        item.MOMProblemId = itemFromExcel.ProblemID;
-
-                        issuesInRedmineProject.Add(item);
-
-                        statItem.Added++;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Issue exists! {0}", subject);
-                        statItem.AlreadyExisted++;
-                    }
-                    */
+                    statItems.Add(statItem);
                 }
-                statItems.Add(statItem);
-
             }
         }
 
