@@ -49,23 +49,23 @@ namespace Redmine_sync
 
             //********************************************************************************************************/
             //write MACBI items to local list
-
-
-            Console.WriteLine("0) Update based on all XLSX file from the directory");
+            
             Console.WriteLine("1) Add new items");
-            Console.WriteLine("2) Update items");
+            Console.WriteLine("2) Update items (based on single XLSX file)");
+            Console.WriteLine("3) Update items (based on all XLSX file from the directory)");
 
             switch (Console.ReadLine())
             {
-                case "0":
-                    UpdateItems(manager, true);
-                    break;
                 case "1":
                     AddNewItems(manager);
                     break;
                 case "2":
                     UpdateItems(manager);
                     break;
+                case "3":
+                    UpdateItems(manager, true);
+                    break;
+
             }
 
 
