@@ -18,6 +18,7 @@ namespace Redmine_sync
         private static int PROJECT_ID = 65;//67 - temporary
         private static string MOM_FILES_DIR = @"C:\Users\waldekd\Documents\MOMProblems";
         private static string MOM_FILE_PATH = MOM_FILES_DIR + @"\moms.xlsx";
+        private static string SEPARAT_LINE = new string('-', 50);
 
         private static Dictionary<string, MOMEnvSettings> MOM_ENV_SETTINGS = new Dictionary<string, MOMEnvSettings>() {
             { "L058@MACBI", new MOMEnvSettings("lxc058.softsystem.pl:7701") },
@@ -30,11 +31,14 @@ namespace Redmine_sync
             { "Q486@MAYO", new MOMEnvSettings("wp486.softsystem.pl:7700") },
             { "Q501@Generic", new MOMEnvSettings("wp501.softsystem.pl:7700") },
             { "Q507@FCS", new MOMEnvSettings("wp507.softsystem.pl:7700") },
-            { "Q26@Generic", new MOMEnvSettings("wp26.softsystem.pl:7700") }            
+            { "Q26@Generic", new MOMEnvSettings("wp26.softsystem.pl:7700") },
+            { "L014@MACBI", new MOMEnvSettings("lxc014.softsystem.pl:8425") }
         };
 
         static void Main(string[] args)
         {
+
+            
             Console.WriteLine("Started...");
             ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(delegate { return true; });
             string host = "http://pcredmine:3000";
@@ -53,6 +57,7 @@ namespace Redmine_sync
             Console.WriteLine("1) Add new items");
             Console.WriteLine("2) Update items (based on single XLSX file)");
             Console.WriteLine("3) Update items (based on all XLSX file from the directory)");
+            Console.WriteLine("9) UBuild stats based in Redmine");
 
             switch (Console.ReadLine())
             {
@@ -65,10 +70,68 @@ namespace Redmine_sync
                 case "3":
                     UpdateItems(manager, true);
                     break;
-
+                case "9":
+                    BuildFinalStats(manager);
+                    break;
             }
 
 
+        }
+
+        private static void BuildFinalStats(RedmineManager manager)
+        {
+            List<StatItem> statItems = new List<StatItem>();
+            List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
+            List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
+            CreateCache(manager, issuesInRedmineProject, problematicIssuesInRedmineProject);
+
+            Dictionary<string /*env*/, FinalStatItem> finalStatDict = new Dictionary<string, FinalStatItem>();
+            GatherFullStats(issuesInRedmineProject, finalStatDict);
+
+            DisplayFullStats(finalStatDict);
+        }
+
+        private static void GatherFullStats(List<IssueItem> issuesInRedmineProject, Dictionary<string, FinalStatItem> finalStatDict)
+        {
+            foreach (IssueItem issue in issuesInRedmineProject)
+            {
+                string env = issue.Env;
+                FinalStatItem finalStatItem = null;
+
+                //check if such env exists in the dics
+                if (!finalStatDict.TryGetValue(env, out finalStatItem))
+                {
+                    finalStatItem = new FinalStatItem();
+                    finalStatDict.Add(env, finalStatItem);
+                }
+
+                if (issue.Status == "New")
+                {
+                    finalStatItem.New++;
+                }
+                else
+                {
+                    finalStatItem.Others++;
+                }
+            }
+        }
+
+        private static void DisplayFullStats(Dictionary<string, FinalStatItem> finalStatDict)
+        {
+
+            Console.WriteLine("{0,-20} {1,-10} {2,-10}", "Env", "New", "Others");
+            Console.WriteLine(SEPARAT_LINE);
+
+            foreach (string env in finalStatDict.Keys)
+            {
+                Console.WriteLine("{0,-20} {1,-10} {2,-10}", env, DontDisplayZero(finalStatDict[env].New), DontDisplayZero(finalStatDict[env].Others));
+            }
+
+        }
+
+        private static string DontDisplayZero(int i)
+        {
+            return i == 0 ? "" : Convert.ToString(i);
         }
 
         private static void UpdateItems(RedmineManager manager, bool allWithinDirectory = false)
