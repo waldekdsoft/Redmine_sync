@@ -40,6 +40,9 @@
       <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <HintPath>..\packages\Oracle.ManagedDataAccess.19.11.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
+    </Reference>
     <Reference Include="redmine-net-api">
       <HintPath>..\..\..\..\..\..\Sources\Redmine\redmine_api\redmine-net-api\src\redmine-net-api\bin\Debug\net472\redmine-net-api.dll</HintPath>
     </Reference>
@@ -66,12 +69,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FinalStatItem.cs" />
+    <Compile Include="CommonTools.cs" />
+    <Compile Include="Stat\FinalStatItem.cs" />
     <Compile Include="IssueItem.cs" />
-    <Compile Include="MOMEnvSettings.cs" />
+    <Compile Include="MOM\MOMActionsManager.cs" />
+    <Compile Include="MOM\MOMEnvSettings.cs" />
+    <Compile Include="OracleProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StatItem.cs" />
+    <Compile Include="RMManegerService.cs" />
+    <Compile Include="Stat\StatItem.cs" />
+    <Compile Include="TMS\TMSTaskSynchronizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
