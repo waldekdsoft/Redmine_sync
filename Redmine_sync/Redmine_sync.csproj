@@ -70,6 +70,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonTools.cs" />
+    <Compile Include="DBService.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Stat\FinalStatItem.cs" />
     <Compile Include="IssueItem.cs" />
     <Compile Include="MOM\MOMActionsManager.cs" />
@@ -79,11 +86,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RMManegerService.cs" />
     <Compile Include="Stat\StatItem.cs" />
+    <Compile Include="TMS\TMSItem.cs" />
     <Compile Include="TMS\TMSTaskSynchronizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

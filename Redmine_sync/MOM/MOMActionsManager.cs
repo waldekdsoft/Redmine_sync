@@ -36,7 +36,7 @@ namespace Redmine_sync
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
 
-            CommonTools.CreateCache(issuesInRedmineProject, problematicIssuesInRedmineProject, PROJECT_ID);
+            CommonTools.CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, PROJECT_ID);
             UpdateBasedOnExcelFile(issuesInRedmineProject, statItems, allWithinDirectory);
             ShowStats(statItems, false);
         }
@@ -46,7 +46,7 @@ namespace Redmine_sync
             List<StatItem> statItems = new List<StatItem>();
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
-            CommonTools.CreateCache(issuesInRedmineProject, problematicIssuesInRedmineProject, PROJECT_ID);
+            CommonTools.CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, PROJECT_ID);
 
             Dictionary<string /*env*/, FinalStatItem> finalStatDict = new Dictionary<string, FinalStatItem>();
             GatherFullStats(issuesInRedmineProject, finalStatDict);
@@ -99,7 +99,7 @@ namespace Redmine_sync
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
 
-            CommonTools.CreateCache(issuesInRedmineProject, problematicIssuesInRedmineProject, PROJECT_ID);
+            CommonTools.CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, PROJECT_ID);
             ProcessExcelFile(issuesInRedmineProject, statItems);
             ShowStats(statItems, true);
         }

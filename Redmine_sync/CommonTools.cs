@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,12 +13,26 @@ namespace Redmine_sync
     {
         public static string SEPARAT_LINE = new string('-', 50);
 
+
+        public static string TryGetName(IdentifiableName s)
+        {
+            if (s == null)
+            {
+                return null;
+            }
+            else
+            {
+                return s.Name;
+            }
+        }
+
+
         public static string DontDisplayZero(int i)
         {
             return i == 0 ? "" : Convert.ToString(i);
         }
 
-        public static void CreateCache(List<IssueItem> issuesInRedmineProject, List<IssueItem> problematicIssuesInRedmineProject, int project_id)
+        public static void CreateMOMCache(List<IssueItem> issuesInRedmineProject, List<IssueItem> problematicIssuesInRedmineProject, int project_id)
         {
             Console.Write("Cache creation...");
             NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
