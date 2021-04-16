@@ -9,6 +9,7 @@ namespace Redmine_sync.TMS
     [Serializable]
     public class TMSItem
     {
+        public string Source { get; set; }
         public string TMS { get; set; }
         public string AssignedTo { get; set; }
         public string  Status { get; set; }
@@ -20,7 +21,7 @@ namespace Redmine_sync.TMS
 
         public override string ToString()
         {
-            return string.Format("TMS: {0} AssignedTo: {1} Status: {2}", TMS, AssignedTo, Status);
+            return string.Format("{1} AssignedTo: {2} Status: {3}", Source, TMS, AssignedTo, Status);
         }
     }
 

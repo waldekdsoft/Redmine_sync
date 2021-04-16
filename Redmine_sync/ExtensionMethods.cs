@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace Redmine_sync
 {
     using TMS_TP = Tuple<TMSItem, TMSItem>;
+    
 
     public static class ExtensionMethods
     {
@@ -22,12 +23,18 @@ namespace Redmine_sync
                 existingList = new List<TMS_TP>();
                 dict.Add(key, existingList);
             }
-            existingList.Add(newValue);     
+            existingList.Add(newValue);
+
+            if (Consts.VERBOSE)
+            {
+                Console.WriteLine("{0}: {1}", key, newValue);
+            }
         }
 
         public static void SerializeTMSItemData(this List<TMSItem> list)
         {
-            using (FileStream fs = new FileStream("test.xml", FileMode.OpenOrCreate))
+            System.IO.File.Delete("tms_db_items.xml");
+            using (FileStream fs = new FileStream("tms_db_items.xml", FileMode.OpenOrCreate))
             {
                 System.Xml.Serialization.XmlSerializer s = new System.Xml.Serialization.XmlSerializer(typeof(List<TMSItem>));
                 s.Serialize(fs, list);
@@ -37,7 +44,7 @@ namespace Redmine_sync
         public static List<TMSItem> DeserializeTMSItemData(this List<TMSItem> list)
         {
             List<TMSItem> list2 = new List<TMSItem>();
-            using (var reader = new StreamReader("test.xml"))
+            using (var reader = new StreamReader("tms_db_items.xml"))
             {
                 System.Xml.Serialization.XmlSerializer deserializer = new System.Xml.Serialization.XmlSerializer(typeof(List<TMSItem>),
                     new System.Xml.Serialization.XmlRootAttribute("ArrayOfTMSItem"));
