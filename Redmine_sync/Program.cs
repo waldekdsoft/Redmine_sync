@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Oracle.ManagedDataAccess.Client;
 using Redmine.Net.Api;
 using Redmine.Net.Api.Types;
+using Redmine_sync.TMS;
 
 namespace Redmine_sync
 {
@@ -20,6 +21,41 @@ namespace Redmine_sync
 
         static void Main(string[] args)
         {
+           /* List<TMSItem> list = new List<TMSItem>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                TMSItem item = new TMSItem();
+                item.TMS = "TMS" + i;
+                item.Status = "N";
+                item.Desctiption = "tararara";
+                list.Add(item);
+            }
+
+            list.SerializeTMSItemData();
+
+            List<TMSItem> list2 = new List<TMSItem>();
+
+            list2 = list2.DeserializeTMSItemData();
+           */
+
+            /*
+            using (FileStream fs = new FileStream("test.xml", FileMode.OpenOrCreate))
+            {
+                System.Xml.Serialization.XmlSerializer s = new System.Xml.Serialization.XmlSerializer(typeof(List<TMSItem>));
+                s.Serialize(fs, list);
+            }
+            */
+            /*
+            List<TMSItem> list2 = new List<TMSItem>();
+            using (var reader = new StreamReader("test.xml"))
+            {
+                System.Xml.Serialization.XmlSerializer deserializer = new System.Xml.Serialization.XmlSerializer(typeof(List<TMSItem>),
+                    new System.Xml.Serialization.XmlRootAttribute("ArrayOfTMSItem"));
+                list2 = (List<TMSItem>)deserializer.Deserialize(reader);
+            }
+            */
+            
             Console.WriteLine("Started...");
 
             //var parameters = new NameValueCollection();

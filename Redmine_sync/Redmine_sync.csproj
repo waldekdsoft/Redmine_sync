@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonTools.cs" />
+    <Compile Include="Consts.cs" />
     <Compile Include="DBService.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

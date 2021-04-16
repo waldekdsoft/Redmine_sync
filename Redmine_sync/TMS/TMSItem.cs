@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Redmine_sync.TMS
 {
-    class TMSItem
+    [Serializable]
+    public class TMSItem
     {
         public string TMS { get; set; }
         public string AssignedTo { get; set; }
