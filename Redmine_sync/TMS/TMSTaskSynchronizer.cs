@@ -1,4 +1,5 @@
 ﻿using Redmine.Net.Api.Types;
+using Redmine_sync.Team;
 using Redmine_sync.TMS;
 using System;
 using System.Collections.Generic;
@@ -30,25 +31,31 @@ namespace Redmine_sync
 
             #region Getting TMS tasks from DB...
             //get all TMS tasks from SD database
-            sw.StartStopwatchAndPrintMessage("Getting TMS tasks from DB...");
+            
 
             DataTable tmsTasksFromDBDataTable = new DataTable();
             if (!Consts.TEST_MODE)
             {
-                tmsTasksFromDBDataTable = DBService.EqecuteQuery(DBService.GET_ALL_TMS_TASKS);
+                sw.StartStopwatchAndPrintMessage("Getting TMS tasks from DB and making cache...");
+                tmsTasksFromDBDataTable = DBService.ExecuteQuery(DBService.GET_ALL_TMS_TASKS);
                 tmsTasksFromDBDataTable.TableName = "TMS_DATA";
-                tmsTasksFromDBDataTable.WriteXml("tms_data.xml");
+                tmsTasksFromDBDataTable.WriteXml(Consts.TMS_CACHE_FILE_NAME);
             }
             else
             {
+                sw.StartStopwatchAndPrintMessage("Getting TMS tasks from cache...");
                 DataSet ds = new DataSet();
-                ds.ReadXml("tms_data.xml", XmlReadMode.InferSchema);
+                ds.ReadXml(Consts.TMS_CACHE_FILE_NAME, XmlReadMode.InferSchema);
                 tmsTasksFromDBDataTable = ds.Tables[0];
             }
 
-            Dictionary<string, TMSItem> dbTMSDict = new Dictionary<string, TMSItem>();
-            
+            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime();
 
+            //Dictionary<string, TMSItem> dbTMSDict = new Dictionary<string, TMSItem>();
+            TMSDictionary dbTMSDict = new TMSDictionary();
+            //List<string> team_members = TeamService.GetDEV1TeamMembersTMSLogins();
+
+            sw.StartStopwatchAndPrintMessage("Conversion DB items to objects...");
             foreach (DataRow tmsTaskFromDB in tmsTasksFromDBDataTable.Rows)
             {
                 TMSItem item = new TMSItem();
@@ -57,15 +64,13 @@ namespace Redmine_sync
                 item.TMS = Convert.ToString(tmsTaskFromDB["TMS_ID"]);
                 item.Status = Convert.ToString(tmsTaskFromDB["STATUS"]);
                 item.Urgency = Convert.ToString(tmsTaskFromDB["URG"]);
-                item.LastActText= Convert.ToString(tmsTaskFromDB["LASTACTION_TXT"]);
+                item.LastActText = Convert.ToString(tmsTaskFromDB["LASTACTION_TXT"]);
                 item.LastActDate = Convert.ToDateTime(tmsTaskFromDB["LASTACTION_DATE"]);
                 item.Desctiption = Convert.ToString(tmsTaskFromDB["TASK_DESCRIPTION"]);
                 item.SDId = Convert.ToString(tmsTaskFromDB["SOFTDEV_ID"]);
-                if (!dbTMSDict.ContainsKey(item.TMS))
-                {
-                    dbTMSDict.Add(item.TMS, item);
-                }
+                dbTMSDict.Add(item);
             }
+
             sw.StopStopwatchAndPrintDoneMessageWithElapsedTime();
             #endregion
 
@@ -77,6 +82,7 @@ namespace Redmine_sync
        
             //reason + list of pairs <TMS task, RM TMS task>
             Dictionary<string, List<TMS_TP>> outputList = new Dictionary<string, List<TMS_TP>>();
+            
 
             if (!Consts.TEST_MODE)
             {
@@ -103,13 +109,18 @@ namespace Redmine_sync
                 redMineTMSList = redMineTMSList.DeserializeTMSItemData();
             }
 
+
+            //SYNCHRONIZATION
+
             foreach (TMSItem itemFromRM in redMineTMSList)
             {
-                TMSItem dbTMSItem = null;
-                if (dbTMSDict.TryGetValue(itemFromRM.TMS, out dbTMSItem))
+                TMSItem dbTMSItem = dbTMSDict.Get(itemFromRM.TMS);
+
+                if (dbTMSItem != null)
                 {
+
                     //ommit closed tasks
-                    if (dbTMSItem.Status.StartsWith("C"))
+                    if (dbTMSItem.Status.StartsWith("C") || dbTMSItem.Status.StartsWith("c"))
                     {
 
                         if (itemFromRM.Status == Consts.RM_CLOSED)
@@ -117,13 +128,11 @@ namespace Redmine_sync
                             //ignore closed in TMS and in RM
                             TMS_TP tp = new TMS_TP(dbTMSItem, itemFromRM);
                             outputList.UpdateDictionary(Consts.RFC_BOTH_CLOSED, tp);
-
                         }
                         else
                         {
                             TMS_TP tp = new TMS_TP(dbTMSItem, itemFromRM);
                             outputList.UpdateDictionary(Consts.RFC_DIFFERENT_STATUSES, tp);
-                            //Console.WriteLine("To be checked: {0}\nRM: {1}", dbTMSItem, itemFromRM);
                         }
                     }
                     else
@@ -147,10 +156,8 @@ namespace Redmine_sync
                     else
                     {
                         outputList.UpdateDictionary(Consts.RFC_NOT_EXISTS_IN_TMS, tp);
-                    }
-                    
+                    }                    
                 }
-
             }
 
             #region TO BE UNCOMMENTED 
@@ -197,9 +204,27 @@ namespace Redmine_sync
                     Console.WriteLine(tp);
                 }
             }
+
+            Console.WriteLine("-------TMS not exist in RM-------");
+            List<string> team_members = TeamService.GetDEV1TeamMembersTMSLogins();
+            Func<TMSItem, bool> filter = i => !i.Used && !i.Status.StartsWith("C") && !i.Status.StartsWith("c") && team_members.Contains(i.AssignedTo);
+
+            foreach (TMSItem item in dbTMSDict.GetItemList(filter))
+            {
+                Console.WriteLine(item);
+            }
             #endregion
 
-
+            Console.WriteLine("-------RM duplicated TMS -------");
+            Dictionary<string, List<TMSItem>> duplicates = redMineTMSList.GetDuplicates();
+            foreach (string tmsNum in duplicates.Keys)
+            {
+                Console.WriteLine(tmsNum);
+                foreach (TMSItem item in duplicates[tmsNum])
+                {
+                    Console.WriteLine("   " + item);
+                }
+            }
 
             //get all TMS tasks from RM and create similar list of objects
 
@@ -224,9 +249,6 @@ namespace Redmine_sync
                 string[] subjectSplitted = issue.Subject.Split('-');
                 itemFromRM.TMS = issue.Subject.Split('-')[0].Trim() + "-" + issue.Subject.Split('-')[1].Trim();
                 itemFromRM.Status = issue.Status.TryGetName();
-
-
-
             }
 
             Console.WriteLine("done!");

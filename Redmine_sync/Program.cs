@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Oracle.ManagedDataAccess.Client;
 using Redmine.Net.Api;
 using Redmine.Net.Api.Types;
+using Redmine_sync.Team;
 using Redmine_sync.TMS;
 
 namespace Redmine_sync
@@ -69,6 +70,7 @@ namespace Redmine_sync
             Console.WriteLine("2) Update items (based on single XLSX file)");
             Console.WriteLine("3) Update items (based on all XLSX file from the directory)");
             Console.WriteLine("4) Synchronize MACBI TMSes");
+            Console.WriteLine("5) Cache DEV1 team data");
             Console.WriteLine("9) Build stats based in Redmine");
 
             switch (Console.ReadLine())
@@ -84,6 +86,9 @@ namespace Redmine_sync
                     break;
                 case "4":
                     new TMSTaskSynchronizer("MACBI").Synchronize();
+                    break;
+                case "5":
+                    TeamService.CacheTeamData();
                     break;
                 case "9":
                     MOMActionsManager.BuildFinalStats();

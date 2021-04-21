@@ -13,12 +13,13 @@ namespace Redmine_sync
         private static string CONN_STRING;
 
         public static string GET_ALL_TMS_TASKS = "SELECT * FROM MACBI_TMS_ADDITIONAL_INFO";
+        public static string GET_ALL_DEV1_USERS = "SELECT * FROM DEV1_MEMBERS_VIEW";
         static DBService()
         {
             CONN_STRING = string.Format("User ID={0}; Password={1}; Data Source={2};", Properties.Resources.User, Properties.Resources.Hidden, Properties.Resources.dbstring);
         }
 
-        public static DataTable EqecuteQuery(string query)
+        public static DataTable ExecuteQuery(string query)
         {
             DataTable dt = new DataTable();
             using (OracleConnection oc = new OracleConnection())

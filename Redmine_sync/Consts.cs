@@ -31,6 +31,10 @@ namespace Redmine_sync
         public static string SRC_RM = "Redmine";
         public static string SRC_DB = "DB";
 
+        public static string NA = "N/A";
+
+        public static string TMS_CACHE_FILE_NAME = "tms_data.xml";
+        public static string USERS_CACHE_FILE_NAME = "user_data.xml";
 
     }
 }

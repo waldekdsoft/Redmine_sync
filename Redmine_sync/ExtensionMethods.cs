@@ -15,6 +15,42 @@ namespace Redmine_sync
 
     public static class ExtensionMethods
     {
+        //public static bool TryGetValueWithMarkingUsedValue(this Dictionary<string, TMSItem> dict, string key, out TMSItem value)
+        //{
+        //    bool ret = dict.TryGetValue(key, out value);
+        //    if (ret)
+        //    {
+        //        value.Used = true;
+        //    }
+        //    return ret;
+        //}
+
+        //public static Dictionary<string, TMSItem> GetAllNotUsedItems(this Dictionary<string, TMSItem> dict)
+        //{
+        //    return dict.Where(i => !i.Value.Used).ToDictionary(i => i.Key, i => i.Value);
+        //}
+
+        public static Dictionary<string, List<TMSItem>> GetDuplicates(this List<TMSItem> list)
+        {
+            Dictionary<string, List<TMSItem>> ret = new Dictionary<string, List<TMSItem>>();
+            foreach (TMSItem tmsItem in list)
+            {
+                if (ret.ContainsKey(tmsItem.TMS))
+                {
+                    ret[tmsItem.TMS].Add(tmsItem);
+                }
+                else
+                {
+                    List<TMSItem> l = new List<TMSItem>();
+                    l.Add(tmsItem);
+                    ret.Add(tmsItem.TMS, l);
+                }
+            }
+            //numerable.GroupBy(x => x.Key).All(g => g.Count() == 1);
+            return ret.Where(x => x.Value.Count() > 1).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+
         public static void UpdateDictionary(this Dictionary<string, List<TMS_TP>> dict, string key, TMS_TP newValue)
         {
             List<TMS_TP> existingList;

@@ -18,6 +18,8 @@ namespace Redmine_sync.TMS
         public DateTime LastActDate { get; set; }
         public string Desctiption { get; set; }
         public string SDId { get; set; }
+        public bool Used { get; set; } = false; 
+
 
         public override string ToString()
         {
