@@ -10,6 +10,7 @@ namespace Redmine_sync.TMS
     public class TMSDictionary 
     {
         Dictionary<string, TMSItem> _dict = new Dictionary<string, TMSItem>();
+        List<string> team_members = TeamService.GetDEV1TeamMembersTMSLogins();
 
         public void Add(TMSItem tmsItem)
         {
@@ -33,6 +34,12 @@ namespace Redmine_sync.TMS
                 item.Used = true;
             }
             return item;
+        }
+
+        public List<TMSItem> GetNotClosedNotUsedAssignedToDEV1ItemList()
+        {
+            Func<TMSItem, bool> filter = i => !i.Used && !i.Status.StartsWith("C") && !i.Status.StartsWith("c") && team_members.Contains(i.AssignedTo);
+            return GetItemList(null);
         }
 
         public List<TMSItem> GetItemList(Func<TMSItem, bool> wherePredicate = null)

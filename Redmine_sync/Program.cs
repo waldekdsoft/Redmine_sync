@@ -63,18 +63,17 @@ namespace Redmine_sync
 
             //get project
             //MOM problems id: 65
-            //var project = RMManegerService.RMManager.GetObject<Project>(/*"mom-problems"*/ "macbi-problems" /*"temporary-macbi-problems"*/, null);
-
-
-           
+            var project = RMManegerService.RMManager.GetObject<Project>(/*"mom-problems"*/ /*"macbi-problems"*/ "temporary-macbi-problems", null);
 
             while (true)
             {
+                Console.Clear();
                 Console.WriteLine("1) Add new items");
                 Console.WriteLine("2) Update items (based on single XLSX file)");
                 Console.WriteLine("3) Update items (based on all XLSX file from the directory)");
-                Console.WriteLine("4) Synchronize MACBI TMSes");
-                Console.WriteLine("5) Cache DEV1 team data");
+                Console.WriteLine("4) Show MACBI TMS synchronization info");
+                Console.WriteLine("5) Add missing TMS tasks to Redmine");
+                Console.WriteLine("8) Cache DEV1 team data");
                 Console.WriteLine("9) Build stats based in Redmine");
                 Console.WriteLine("0) Exit");
                 Console.WriteLine("Select an option...");
@@ -91,9 +90,19 @@ namespace Redmine_sync
                         MOMActionsManager.UpdateItems(true);
                         break;
                     case "4":
-                        new TMSTaskSynchronizer("MACBI").Synchronize();
+                        {
+                            TMSTaskSynchronizer tmsTaskSynchronizer = TMSTaskSynchronizer.GetInstance("MACBI");
+                            tmsTaskSynchronizer.GetherSyncData();
+                            tmsTaskSynchronizer.DisplayStatsForTMSSync();
+                        }
                         break;
                     case "5":
+                        {
+                            TMSTaskSynchronizer tmsTaskSynchronizer = TMSTaskSynchronizer.GetInstance("MACBI");
+                            tmsTaskSynchronizer.AddMissingTMSTasksToRedmine();
+                        }
+                        break;
+                    case "8":
                         TeamService.CacheTeamData();
                         break;
                     case "9":

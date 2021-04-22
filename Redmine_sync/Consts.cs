@@ -25,13 +25,14 @@ namespace Redmine_sync
         public static string RFC_BOTH_CLOSED = "RFC_BOTH_CLOSED";
         public static string RFC_BOTH_OK = "RFC_BOTH_OK";
 
-        public static bool TEST_MODE = false;
+        public static bool TEST_MODE = true;
         public static bool VERBOSE = false;
 
         public static string SRC_RM = "Redmine";
         public static string SRC_DB = "DB";
 
         public static string NA = "N/A";
+        public static string EOL = @"\r\n";
 
         public static string TMS_CACHE_FILE_NAME = "tms_data.xml";
         public static string USERS_CACHE_FILE_NAME = "user_data.xml";
