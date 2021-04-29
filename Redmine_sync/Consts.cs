@@ -33,9 +33,37 @@ namespace Redmine_sync
 
         public static string NA = "N/A";
         public static string EOL = @"\r\n";
+        public static string EOL_SPECIAL = "\r\n";
 
-        public static string TMS_CACHE_FILE_NAME = "tms_data.xml";
-        public static string USERS_CACHE_FILE_NAME = "user_data.xml";
+        public static class FILE_NAMES
+        {
+            public static string DB_TMS_CACHE = "db_tms_data.xml";
+            public static string RM_TMS_CACHE = "rm_tms_data.xml";
+            public static string USERS_CACHE = "user_data.xml";
+        }
+
+        public static class PROJECT_NAMES
+        {
+            public static class TMS
+            {
+                public static class MACBI
+                {
+                    public static int TEMPORARY_PROBLEMS = 74;
+                    public static int PROBLEMS = 15;
+                }
+            }
+
+            public static class MOM
+            {
+                public static int PROBLEMS = 65;
+                public static int TEMPORARY_PROBLEMS = 67;
+            }
+        }
+        //"macbi-problems" 15
+        //"temporary-macbi-problems" 74
+        //"mom-problems" 65
+        //"temporary-mom-problems" (wdtest) 67
+
 
     }
 }

@@ -20,7 +20,7 @@ namespace Redmine_sync.Team
             DataTable usersDataTable = new DataTable();
             usersDataTable = DBService.ExecuteQuery(DBService.GET_ALL_DEV1_USERS);
             usersDataTable.TableName = "USER_DATA";
-            usersDataTable.WriteXml(Consts.USERS_CACHE_FILE_NAME);
+            usersDataTable.WriteXml(Consts.FILE_NAMES.USERS_CACHE);
             sw.StopStopwatchAndPrintDoneMessageWithElapsedTime();
         }
 
@@ -34,12 +34,12 @@ namespace Redmine_sync.Team
                 DataSet ds = new DataSet();
                 try
                 {
-                    ds.ReadXml(Consts.USERS_CACHE_FILE_NAME, XmlReadMode.InferSchema);
+                    ds.ReadXml(Consts.FILE_NAMES.USERS_CACHE, XmlReadMode.InferSchema);
                 }
                 catch (Exception)
                 {
                     CacheTeamData();
-                    ds.ReadXml(Consts.USERS_CACHE_FILE_NAME, XmlReadMode.InferSchema);
+                    ds.ReadXml(Consts.FILE_NAMES.USERS_CACHE, XmlReadMode.InferSchema);
                 }
                 DataTable usersDataTable = ds.Tables[0];
                 foreach (DataRow userRow in usersDataTable.Rows)

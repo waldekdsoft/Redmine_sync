@@ -1,4 +1,5 @@
 ﻿using Redmine.Net.Api.Types;
+using Redmine_sync.GUI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +11,8 @@ namespace Redmine_sync
 {
     class MOMActionsManager
     {
-        private static int PROJECT_ID = 65;//67 - temporary
+        static IOutputable output = null;
+
         private static string MOM_FILES_DIR = @"C:\Users\waldekd\Documents\MOMProblems";
         private static string MOM_FILE_PATH = MOM_FILES_DIR + @"\moms.xlsx";
 
@@ -30,13 +32,18 @@ namespace Redmine_sync
             { "L014@MACBI", new MOMEnvSettings("lxc014.softsystem.pl:8425") }
         };
 
-        public static void UpdateItems(bool allWithinDirectory = false)
+        public MOMActionsManager(IOutputable out1)
+        {
+            output = out1;
+        }
+
+        public void UpdateItems(bool allWithinDirectory = false)
         {
             List<StatItem> statItems = new List<StatItem>();
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
 
-            CommonTools.CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, PROJECT_ID);
+            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS);
             UpdateBasedOnExcelFile(issuesInRedmineProject, statItems, allWithinDirectory);
             ShowStats(statItems, false);
         }
@@ -46,24 +53,66 @@ namespace Redmine_sync
             List<StatItem> statItems = new List<StatItem>();
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
-            CommonTools.CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, PROJECT_ID);
+            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS);
 
             Dictionary<string /*env*/, FinalStatItem> finalStatDict = new Dictionary<string, FinalStatItem>();
             GatherFullStats(issuesInRedmineProject, finalStatDict);
-
             DisplayFullStats(finalStatDict);
         }
 
+        public static void CreateMOMCache(List<IssueItem> issuesInRedmineProject, List<IssueItem> problematicIssuesInRedmineProject, int project_id)
+        {
+            Console.Write("Cache creation...");
+
+            List<Issue> issuesListFromRemine = CommonTools.GetIssuesFromRedmine(project_id);
+
+            foreach (var issue in issuesListFromRemine.Where(issue => issue.Project.Id == project_id))
+            {
+                string subject = issue.Subject;
+
+                //split subject to get env and problem id
+                string[] subjectSplitted = subject.Split('-');
+
+                //get env
+                string env = subjectSplitted[0].Trim();
+
+                IssueItem item = new IssueItem();
+                item.Id = issue.Id;
+                item.Status = issue.Status.Name;
+                item.Desc = subject;
+                item.Env = env;
+
+                if (subjectSplitted.Length >= 4)
+                {
+                    //get MOM problem is from subject
+                    item.ProblemId = subjectSplitted[1].Trim();
+
+                    //look for sender code
+                    if (subjectSplitted.Length >= 5)
+                    {
+                        item.SenderCode = subjectSplitted[4].Trim();
+                    }
+                    issuesInRedmineProject.Add(item);
+                }
+                else
+                {
+                    problematicIssuesInRedmineProject.Add(item);
+                }
+            }
+
+            Console.WriteLine("done!");
+        }
 
         private static void DisplayFullStats(Dictionary<string, FinalStatItem> finalStatDict)
         {
 
-            Console.WriteLine("{0,-20} {1,-10} {2,-10}", "Env", "New", "Others");
-            Console.WriteLine(CommonTools.SEPARAT_LINE);
+            output.WriteLine(string.Format("{0,-20} {1,-10} {2,-10}", "Env", "New", "Others"));
+            
+            output.WriteLine(CommonTools.SEPARAT_LINE);
 
             foreach (string env in finalStatDict.Keys)
             {
-                Console.WriteLine("{0,-20} {1,-10} {2,-10}", env, CommonTools.DontDisplayZero(finalStatDict[env].New), CommonTools.DontDisplayZero(finalStatDict[env].Others));
+                output.WriteLine(string.Format("{0,-20} {1,-10} {2,-10}", env, CommonTools.DontDisplayZero(finalStatDict[env].New), CommonTools.DontDisplayZero(finalStatDict[env].Others)));
             }
 
         }
@@ -93,13 +142,13 @@ namespace Redmine_sync
             }
         }
 
-        public static void AddNewItems()
+        public void AddNewItems()
         {
             List<StatItem> statItems = new List<StatItem>();
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
 
-            CommonTools.CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, PROJECT_ID);
+            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS);
             ProcessExcelFile(issuesInRedmineProject, statItems);
             ShowStats(statItems, true);
         }
@@ -112,19 +161,19 @@ namespace Redmine_sync
 
             foreach (string tabName in xlsx.GetWorksheetNames())
             {
-                Console.WriteLine("--------------------------------------------");
-                Console.WriteLine("Processing of {0}...", tabName);
-                Console.WriteLine("--------------------------------------------");
+                output.WriteLine("--------------------------------------------");
+                output.WriteLine(string.Format("Processing of {0}...", tabName));
+                output.WriteLine("--------------------------------------------");
 
                 MOMEnvSettings momEnvSettings = null;
                 if (!MOM_ENV_SETTINGS.TryGetValue(tabName, out momEnvSettings))
                 {
-                    Console.WriteLine("No MOMEnvSettings for {0}", tabName);
-                    Console.ReadKey();
+                    output.WriteLine(string.Format("No MOMEnvSettings for {0}", tabName));
+                    //output.ReadKey();
                 }
                 else
                 {
-                    Console.WriteLine("Start processing: {0}", tabName);
+                    output.WriteLine(string.Format("Start processing: {0}", tabName));
 
                     StatItem statItem = new StatItem();
                     statItem.Env = tabName;
@@ -142,7 +191,7 @@ namespace Redmine_sync
                       }
                       select item;
 
-                    IdentifiableName p = IdentifiableName.Create<Project>(PROJECT_ID);
+                    IdentifiableName p = IdentifiableName.Create<Project>(Consts.PROJECT_NAMES.MOM.PROBLEMS);
                     foreach (var itemFromExcel in query)
                     {
                         string subject = string.Format("{0} - {1} - {2} - {3} - {4}", tabName, itemFromExcel.ProblemID, itemFromExcel.EventCode, itemFromExcel.ProblemCode, itemFromExcel.SenderCode);
@@ -168,7 +217,7 @@ namespace Redmine_sync
                         }
                         else
                         {
-                            Console.WriteLine("Issue exists! {0}", subject);
+                            output.WriteLine(string.Format("Issue exists! {0}", subject));
                             statItem.AlreadyExisted++;
                         }
                     }
@@ -179,20 +228,20 @@ namespace Redmine_sync
 
         private static void ShowStats(List<StatItem> statItems, bool added)
         {
-            Console.WriteLine("--------------------------------------------");
+            output.WriteLine("--------------------------------------------");
             //show stats
             foreach (StatItem statItem in statItems)
             {
                 if (added)
                 {
-                    statItem.ShowStatsAdded();
+                    output.WriteLine(statItem.GetItemAddedMessage());
                 }
                 else
                 {
-                    statItem.ShowStatsUpdated();
+                    output.WriteLine(statItem.GetItemUpdatedMessage());
                 }
             }
-            Console.WriteLine("--------------------------------------------");
+            output.WriteLine("--------------------------------------------");
         }
 
         private static void UpdateBasedOnExcelFile(List<IssueItem> issuesInRedmineProject,
@@ -216,13 +265,13 @@ namespace Redmine_sync
             {
                 var xlsx = new LinqToExcel.ExcelQueryFactory(singleXSLXfile);
 
-                Console.WriteLine("File: {0}", singleXSLXfile);
+                output.WriteLine(string.Format("File: {0}", singleXSLXfile));
 
                 foreach (string tabName in xlsx.GetWorksheetNames())
                 {
-                    Console.WriteLine("--------------------------------------------");
-                    Console.WriteLine("Processing of {0}...", tabName);
-                    Console.WriteLine("--------------------------------------------");
+                    output.WriteLine("--------------------------------------------");
+                    output.WriteLine(string.Format("Processing of {0}...", tabName));
+                    output.WriteLine("--------------------------------------------");
 
                     StatItem statItem = new StatItem(tabName);
                     statItem.Env = tabName;
@@ -240,7 +289,7 @@ namespace Redmine_sync
                       }
                       select item;
 
-                    IdentifiableName p = IdentifiableName.Create<Project>(PROJECT_ID);
+                    IdentifiableName p = IdentifiableName.Create<Project>(Consts.PROJECT_NAMES.MOM.PROBLEMS);
                     foreach (var itemFromExcel in query)
                     {
                         //look for the item in RM

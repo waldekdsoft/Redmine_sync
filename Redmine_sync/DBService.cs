@@ -37,5 +37,12 @@ namespace Redmine_sync
 
             return dt;
         }
+
+        public static async Task<DataTable> ExecuteQueryAsync(string query)
+        {
+            DataTable ret = null;
+            await Task.Run(() => ret = ExecuteQuery(query));
+            return ret;
+        }
     }
 }

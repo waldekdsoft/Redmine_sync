@@ -28,14 +28,14 @@ namespace Redmine_sync
             Env = env;                 
         }
 
-        public void ShowStatsAdded()
+        public string GetItemAddedMessage()
         {
-            Console.WriteLine("{0} - Added: {1} Existed: {2}", Env, Added, AlreadyExisted);
+            return string.Format("{0} - Added: {1} Existed: {2}", Env, Added, AlreadyExisted);
         }
 
-        public void ShowStatsUpdated()
+        public string GetItemUpdatedMessage()
         {
-            Console.WriteLine("{0} - Updated: {1} NotUpdated: {2}", Env, Updated, NotUpdated);
+            return string.Format("{0} - Updated: {1} NotUpdated: {2}", Env, Updated, NotUpdated);
         }
 
     }
