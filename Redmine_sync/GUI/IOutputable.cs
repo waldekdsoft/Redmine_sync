@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Redmine_sync.GUI
 {
-    interface IOutputable
+    public interface IOutputable
     {
-        void Write(string s);
-        void WriteLine(string s);
+        void Write(string s, params object[] args);
+        void WriteLine(string s, params object[] args);
+
+        
     }
 }

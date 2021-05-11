@@ -29,6 +29,7 @@ namespace Redmine_sync
             { "Q507@FCS", new MOMEnvSettings("wp507.softsystem.pl:7700") },
             { "Q26@Generic", new MOMEnvSettings("wp26.softsystem.pl:7700") },
             { "Q336@MACBI", new MOMEnvSettings("wp336.softsystem.pl:7700") },
+            { "Q508@AON", new MOMEnvSettings("wp508.softsystem.pl:7700") },            
             { "L014@MACBI", new MOMEnvSettings("lxc014.softsystem.pl:8425") }
         };
 
@@ -43,7 +44,7 @@ namespace Redmine_sync
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
 
-            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS);
+            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
             UpdateBasedOnExcelFile(issuesInRedmineProject, statItems, allWithinDirectory);
             ShowStats(statItems, false);
         }
@@ -53,16 +54,16 @@ namespace Redmine_sync
             List<StatItem> statItems = new List<StatItem>();
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
-            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS);
+            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
 
             Dictionary<string /*env*/, FinalStatItem> finalStatDict = new Dictionary<string, FinalStatItem>();
             GatherFullStats(issuesInRedmineProject, finalStatDict);
             DisplayFullStats(finalStatDict);
         }
 
-        public static void CreateMOMCache(List<IssueItem> issuesInRedmineProject, List<IssueItem> problematicIssuesInRedmineProject, int project_id)
+        public static void CreateMOMCache(List<IssueItem> issuesInRedmineProject, List<IssueItem> problematicIssuesInRedmineProject, int project_id, IOutputable output)
         {
-            Console.Write("Cache creation...");
+            output.Write("Cache creation...");
 
             List<Issue> issuesListFromRemine = CommonTools.GetIssuesFromRedmine(project_id);
 
@@ -100,19 +101,19 @@ namespace Redmine_sync
                 }
             }
 
-            Console.WriteLine("done!");
+            output.WriteLine("done!");
         }
 
         private static void DisplayFullStats(Dictionary<string, FinalStatItem> finalStatDict)
         {
 
-            output.WriteLine(string.Format("{0,-20} {1,-10} {2,-10}", "Env", "New", "Others"));
+            output.WriteLine("{0,-20} {1,-10} {2,-10}", "Env", "New", "Others");
             
             output.WriteLine(CommonTools.SEPARAT_LINE);
 
             foreach (string env in finalStatDict.Keys)
             {
-                output.WriteLine(string.Format("{0,-20} {1,-10} {2,-10}", env, CommonTools.DontDisplayZero(finalStatDict[env].New), CommonTools.DontDisplayZero(finalStatDict[env].Others)));
+                output.WriteLine("{0,-20} {1,-10} {2,-10}", env, CommonTools.DontDisplayZero(finalStatDict[env].New), CommonTools.DontDisplayZero(finalStatDict[env].Others));
             }
 
         }
@@ -148,7 +149,7 @@ namespace Redmine_sync
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
 
-            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS);
+            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
             ProcessExcelFile(issuesInRedmineProject, statItems);
             ShowStats(statItems, true);
         }
@@ -162,18 +163,18 @@ namespace Redmine_sync
             foreach (string tabName in xlsx.GetWorksheetNames())
             {
                 output.WriteLine("--------------------------------------------");
-                output.WriteLine(string.Format("Processing of {0}...", tabName));
+                output.WriteLine("Processing of {0}...", tabName);
                 output.WriteLine("--------------------------------------------");
 
                 MOMEnvSettings momEnvSettings = null;
                 if (!MOM_ENV_SETTINGS.TryGetValue(tabName, out momEnvSettings))
                 {
-                    output.WriteLine(string.Format("No MOMEnvSettings for {0}", tabName));
+                    output.WriteLine("No MOMEnvSettings for {0}", tabName);
                     //output.ReadKey();
                 }
                 else
                 {
-                    output.WriteLine(string.Format("Start processing: {0}", tabName));
+                    output.WriteLine("Start processing: {0}", tabName);
 
                     StatItem statItem = new StatItem();
                     statItem.Env = tabName;
@@ -217,7 +218,7 @@ namespace Redmine_sync
                         }
                         else
                         {
-                            output.WriteLine(string.Format("Issue exists! {0}", subject));
+                            output.WriteLine("Issue exists! {0}", subject);
                             statItem.AlreadyExisted++;
                         }
                     }
@@ -265,12 +266,12 @@ namespace Redmine_sync
             {
                 var xlsx = new LinqToExcel.ExcelQueryFactory(singleXSLXfile);
 
-                output.WriteLine(string.Format("File: {0}", singleXSLXfile));
+                output.WriteLine("File: {0}", singleXSLXfile);
 
                 foreach (string tabName in xlsx.GetWorksheetNames())
                 {
                     output.WriteLine("--------------------------------------------");
-                    output.WriteLine(string.Format("Processing of {0}...", tabName));
+                    output.WriteLine("Processing of {0}...", tabName);
                     output.WriteLine("--------------------------------------------");
 
                     StatItem statItem = new StatItem(tabName);

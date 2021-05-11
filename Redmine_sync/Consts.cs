@@ -25,7 +25,7 @@ namespace Redmine_sync
         public static string RFC_BOTH_CLOSED = "RFC_BOTH_CLOSED";
         public static string RFC_BOTH_OK = "RFC_BOTH_OK";
 
-        public static bool TEST_MODE = true;
+        public static bool TEST_MODE = false;
         public static bool VERBOSE = false;
 
         public static string SRC_RM = "Redmine";

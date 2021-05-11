@@ -1,4 +1,5 @@
 ﻿using Redmine.Net.Api.Types;
+using Redmine_sync.GUI;
 using Redmine_sync.TMS;
 using System;
 using System.Collections.Generic;
@@ -51,7 +52,7 @@ namespace Redmine_sync
         }
 
 
-        public static void UpdateDictionary(this Dictionary<string, List<TMS_TP>> dict, string key, TMS_TP newValue)
+        public static void UpdateDictionary(this Dictionary<string, List<TMS_TP>> dict, string key, TMS_TP newValue, IOutputable ouotput = null)
         {
             List<TMS_TP> existingList;
             if (!dict.TryGetValue(key, out existingList))
@@ -61,9 +62,9 @@ namespace Redmine_sync
             }
             existingList.Add(newValue);
 
-            if (Consts.VERBOSE)
+            if (Consts.VERBOSE  && ouotput != null)
             {
-                Console.WriteLine("{0}: {1}", key, newValue);
+                ouotput.WriteLine("{0}: {1}", key, newValue);
             }
         }
 
@@ -91,16 +92,16 @@ namespace Redmine_sync
         }
 
 
-        public static void StartStopwatchAndPrintMessage(this Stopwatch sw, string message)
+        public static void StartStopwatchAndPrintMessage(this Stopwatch sw, string message, IOutputable output)
         {
-            Console.Write(message);
+            output.Write(message);
             sw.Restart();
         }
 
-        public static void StopStopwatchAndPrintDoneMessageWithElapsedTime(this Stopwatch sw)
+        public static void StopStopwatchAndPrintDoneMessageWithElapsedTime(this Stopwatch sw, IOutputable output)
         {
             sw.Stop();
-            Console.WriteLine("done! ({0}s)", sw.Elapsed.TotalSeconds);
+            output.WriteLine("done! ({0}s)", sw.Elapsed.TotalSeconds);
         }
 
 

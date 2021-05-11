@@ -1,4 +1,6 @@
 ﻿using Redmine.Net.Api.Types;
+using Redmine_sync.GUI;
+using Redmine_sync.Team;
 using Redmine_sync.TMS;
 using System;
 using System.Collections.Generic;
@@ -6,7 +8,6 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Redmine_sync
 {
@@ -25,28 +26,34 @@ namespace Redmine_sync
         TMSDictionary rmTMSDict = null;
         Dictionary<string, List<TMS_TP>> outputList = null;
 
+        List<string> team_members = null;
+
+        IOutputable output = null;
+
         static Dictionary<string /*client*/, TMSTaskSynchronizer> instancesDict = new Dictionary<string, TMSTaskSynchronizer>();
 
-        public static TMSTaskSynchronizer GetInstance(string client)
+        public static TMSTaskSynchronizer GetInstance(string client, IOutputable outp)
         {
             TMSTaskSynchronizer instance = null;
 
             if (!instancesDict.TryGetValue(client, out instance))
             {
-                instance = new TMSTaskSynchronizer(client);
+                instance = new TMSTaskSynchronizer(client, outp);
                 instancesDict.Add(client, instance);
             }
             return instance;
         }
 
-        private TMSTaskSynchronizer(string client)
+        private TMSTaskSynchronizer(string client, IOutputable outp)
         {
             this.client = client;
+            this.output = outp;
+            this.team_members = TeamService.GetDEV1TeamMembersTMSLogins(outp); ;
         }
 
         public void AddMissingTMSTasksToRedmine()
         {
-            sw.StartStopwatchAndPrintMessage("Getting TMS tasks from DB and making cache...");
+            sw.StartStopwatchAndPrintMessage("Getting TMS tasks from DB and making cache...", output);
             GetherSyncData();
 
             IdentifiableName p = IdentifiableName.Create<Project>(Consts.PROJECT_NAMES.TMS.MACBI.PROBLEMS); //to-be-changed
@@ -64,7 +71,7 @@ namespace Redmine_sync
             List<string> listOfAddedItems = new List<string>();
             List<string> listOfNOTAddedItems = new List<string>();
 
-            foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList())
+            foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(team_members))
             {
                 string description = item.Desctiption;
                 //check if really there is no such a TMS in RM (maybe it was already closed)
@@ -73,7 +80,17 @@ namespace Redmine_sync
                 //redMineTMSList.Contains()
                 if (tmsItem == null)
                 {
-                    string firstLine = description.Substring(0, description.Contains("\r\n") ? description.IndexOf("\r\n") : description.IndexOf("."));
+                    string firstLine = null;
+
+                    if (description.Contains("\r\n") || description.Contains("."))
+                    {
+                        firstLine = description.Substring(0, description.Contains("\r\n") ? description.IndexOf("\r\n") : description.IndexOf("."));
+                    }
+                    else
+                    {
+                        firstLine = description;
+                    }
+
                     string subject = string.Format("{0} - {1}", item.TMS, firstLine);
                     var newIssue = new Issue { Subject = subject, Project = p, Description = description, AssignedTo = u, Priority = priority };
                     RMManegerService.RMManager.CreateObject(newIssue);
@@ -92,21 +109,21 @@ namespace Redmine_sync
                 }
             }
 
-            Console.WriteLine("List of added items ({0})", listOfAddedItems.Count);
-            Console.WriteLine("List of NOT added items ({0})", listOfNOTAddedItems.Count);
+            output.WriteLine("List of added items ({0})", listOfAddedItems.Count);
+            output.WriteLine("List of NOT added items ({0})", listOfNOTAddedItems.Count);
 
             if (listOfAddedItems.Count > 0)
             {
-                Console.WriteLine("Cache needs to be refreshed!");
+                output.WriteLine("Cache needs to be refreshed!");
                 rmTMSDict = null;
                 GetherSyncData();
             }
-            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime();
+            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime(output);
         }
 
         public void GetherSyncData()
         {
-            Console.WriteLine("Gethering of synchronization data for {0} started...", this.client);
+            output.WriteLine("Gethering of synchronization data for {0} started...", this.client);
 
             if (dbTMSDict == null)
             {
@@ -114,12 +131,12 @@ namespace Redmine_sync
             }
             else
             {
-                Console.WriteLine("TMS dictionary already exists in memory...");
+                output.WriteLine("TMS dictionary already exists in memory...");
             }
 
             if (rmTMSDict == null)
             {
-                rmTMSDict = GetTMSDataFromRedMine();
+                rmTMSDict = GetTMSDataFromRedMine(output);
             }
             //if (redMineTMSList == null)
             //{
@@ -127,7 +144,7 @@ namespace Redmine_sync
             //}
             else
             {
-                Console.WriteLine("RM list already exists in memory...");
+                output.WriteLine("RM list already exists in memory...");
             }
 
             #region TO BE UNCOMMENTED 
@@ -159,7 +176,9 @@ namespace Redmine_sync
             //}
             #endregion
 
-            Console.WriteLine("Gethering of synchronization data for {0} finished...", this.client);
+            output.WriteLine("Gethering of synchronization data for {0} finished...", this.client);
+
+            return;
         }
 
         //reason + list of pairs <TMS task, RM TMS task>
@@ -227,45 +246,46 @@ namespace Redmine_sync
         {
             foreach (string key in outputList.Keys)
             {
-                Console.WriteLine("---------------------------");
-                Console.WriteLine(key);
-                Console.WriteLine("---------------------------");
+                output.WriteLine("---------------------------");
+                output.WriteLine(key);
+                output.WriteLine("---------------------------");
                 foreach (TMS_TP tp in outputList[key])
                 {
-                    Console.WriteLine(tp);
+                    output.WriteLine(tp.ToString());
                 }
             }
 
-            Console.WriteLine("-------TMS not exist in RM-------");
-            foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList())
+            output.WriteLine("-------TMS not exist in RM-------");
+            foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(team_members))
             {
-                Console.WriteLine(item);
+                output.WriteLine(item.ToString());
             }
 
-            Console.WriteLine("-------RM duplicated TMS -------");
+            output.WriteLine("-------RM duplicated TMS -------");
             Dictionary<string, List<TMSItem>> duplicates = rmTMSDict.GetDuplicates();
             foreach (string tmsNum in duplicates.Keys)
             {
-                Console.WriteLine(tmsNum);
+                output.WriteLine(tmsNum);
                 foreach (TMSItem item in duplicates[tmsNum])
                 {
-                    Console.WriteLine("   " + item);
+                    output.WriteLine("   " + item);
                 }
             }
         }
 
-        private static TMSDictionary GetTMSDataFromRedMine()
+        private static TMSDictionary GetTMSDataFromRedMine(IOutputable output)
         {
             Stopwatch sw = new Stopwatch();
-            sw.StartStopwatchAndPrintMessage("Getting TMS data from RedMine...");
+            sw.StartStopwatchAndPrintMessage("Getting TMS data from RedMine...", output);
             NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
             //List<TMSItem> redMineTMSList = new List<TMSItem>();
+
             TMSDictionary dict = new TMSDictionary();
             if (!Consts.TEST_MODE)
             {
                 foreach (var issue in RMManegerService.RMManager.GetObjects<Issue>(parameters).Where(issue => issue.Project.Id == Consts.PROJECT_NAMES.TMS.MACBI.PROBLEMS))
                 {
-                    string subject = issue.Subject;
+                   /*string subject = issue.Subject;
 
                     TMSItem itemFromRM = new TMSItem();
                     itemFromRM.Source = Consts.SRC_RM;
@@ -277,7 +297,8 @@ namespace Redmine_sync
                     itemFromRM.Status = issue.Status.TryGetName();
 
                     //redMineTMSList.Add(itemFromRM);
-                    dict.Add(itemFromRM);
+                   */
+                    dict.Add(new TMSItem(issue));
                 }
 
                 //redMineTMSList.SerializeTMSItemData();
@@ -288,7 +309,7 @@ namespace Redmine_sync
                 dict = TMSDictionary.DeserializeTMSItemData(Consts.FILE_NAMES.RM_TMS_CACHE);
             }
 
-            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime();
+            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime(output);
             return dict;
         }
 
@@ -332,7 +353,7 @@ namespace Redmine_sync
             DataTable tmsTasksFromDBDataTable = new DataTable();
             if (!Consts.TEST_MODE)
             {
-                sw.StartStopwatchAndPrintMessage("Getting TMS tasks from DB and making cache...");
+                sw.StartStopwatchAndPrintMessage("Getting TMS tasks from DB and making cache...", output);
                 //Task<DataTable> execureQueryTask = DBService.ExecuteQueryAsync(DBService.GET_ALL_TMS_TASKS);
                 tmsTasksFromDBDataTable = DBService.ExecuteQuery(DBService.GET_ALL_TMS_TASKS);
                 tmsTasksFromDBDataTable.TableName = "TMS_DATA";
@@ -340,19 +361,19 @@ namespace Redmine_sync
             }
             else
             {
-                sw.StartStopwatchAndPrintMessage("Getting TMS tasks from cache...");
+                sw.StartStopwatchAndPrintMessage("Getting TMS tasks from cache...", output);
                 DataSet ds = new DataSet();
                 ds.ReadXml(Consts.FILE_NAMES.DB_TMS_CACHE, XmlReadMode.InferSchema);
                 tmsTasksFromDBDataTable = ds.Tables[0];
             }
 
-            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime();
+            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime(output);
 
             //Dictionary<string, TMSItem> dbTMSDict = new Dictionary<string, TMSItem>();
             TMSDictionary dbTMSDict = new TMSDictionary();
             //List<string> team_members = TeamService.GetDEV1TeamMembersTMSLogins();
 
-            sw.StartStopwatchAndPrintMessage("Conversion DB items to objects...");
+            sw.StartStopwatchAndPrintMessage("Conversion DB items to objects...", output);
             foreach (DataRow tmsTaskFromDB in tmsTasksFromDBDataTable.Rows)
             {
                 TMSItem item = new TMSItem();
@@ -368,13 +389,13 @@ namespace Redmine_sync
                 dbTMSDict.Add(item);
             }
 
-            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime();
+            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime(output);
             return dbTMSDict;
         }
 
-        public static void CreateTMSCache()
+        public static void CreateTMSCache(IOutputable output)
         {
-            Console.Write("Cache creation...");
+            output.Write("Cache creation...");
             //NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
 
 //            Task<List<Issue>> issuesListFromRemineTask = CommonTools.GetIssuesFromRedmine(Consts.PROJECT_NAMES.TMS.MACBI.PROBLEMS);
@@ -394,7 +415,7 @@ namespace Redmine_sync
                 itemFromRM.Status = issue.Status.TryGetName();
             }
 
-            Console.WriteLine("done!");
+            output.WriteLine("done!");
         }
     }
 }
