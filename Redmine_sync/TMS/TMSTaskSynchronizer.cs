@@ -1,4 +1,5 @@
 ﻿using Redmine.Net.Api.Types;
+using Redmine_sync.DataSets;
 using Redmine_sync.GUI;
 using Redmine_sync.Team;
 using Redmine_sync.TMS;
@@ -11,7 +12,10 @@ using System.Linq;
 
 namespace Redmine_sync
 {
+    using static Redmine_sync.DataSets.MainDS;
     using TMS_TP = Tuple<TMSItem, TMSItem>;
+    //https://www.softcomputer.com/itms/gentaskdetails.php?Client=MACBI&ID=02732
+    //string ITMS_REDIRECTION_TEMPLATE = "https://www.softcomputer.com/itms/gentaskdetails.php?Client={0}&ID={1}";
 
     public class TMSTaskSynchronizer
     {
@@ -89,6 +93,18 @@ namespace Redmine_sync
                     else
                     {
                         firstLine = description;
+                    }
+
+                    if (firstLine.Length > 255)
+                    {
+
+                        firstLine = firstLine.Substring(0, 240);//255 is max lenght of subject.
+
+                        int lastDotIndex = firstLine.LastIndexOf(".");
+                        if (lastDotIndex > -1)
+                        {
+                            firstLine = firstLine.Substring(0, lastDotIndex);
+                        }                        
                     }
 
                     string subject = string.Format("{0} - {1}", item.TMS, firstLine);
@@ -244,24 +260,37 @@ namespace Redmine_sync
 
         public void DisplayStatsForTMSSync()
         {
+            MainDS ds = new MainDS();
+            TMSWithReasonDataTable dt = ds.TMSWithReason;
+
+            output.WriteLine("");
             foreach (string key in outputList.Keys)
             {
-                output.WriteLine("---------------------------");
-                output.WriteLine(key);
-                output.WriteLine("---------------------------");
+                //output.WriteLine("---------------------------");
+                //output.WriteLine(key);
+                //output.WriteLine("---------------------------");
                 foreach (TMS_TP tp in outputList[key])
                 {
-                    output.WriteLine(tp.ToString());
+                    //output.WriteLine(tp.ToString());
+                    DataRow r = dt.NewRow();
+                    r["Reason"] = key;
+                    if(tp.Item1 != null)
+                        r["TMS"] = tp.Item1.TMS;
+                    r["Text"] = tp.ToString();
+                    dt.Rows.Add(r);
                 }
             }
 
-            output.WriteLine("-------TMS not exist in RM-------");
+            dt.AcceptChanges();
+            output.WriteToGrid(dt);
+
+            output.WriteLine("\r\n-------TMS not exist in RM-------");
             foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(team_members))
             {
                 output.WriteLine(item.ToString());
             }
 
-            output.WriteLine("-------RM duplicated TMS -------");
+            output.WriteLine("\r\n-------RM duplicated TMS -------");
             Dictionary<string, List<TMSItem>> duplicates = rmTMSDict.GetDuplicates();
             foreach (string tmsNum in duplicates.Keys)
             {
@@ -271,6 +300,27 @@ namespace Redmine_sync
                     output.WriteLine("   " + item);
                 }
             }
+
+            output.WriteLine("\r\n-------ASSIGNED TO ME IN REDMINE-------");
+            List<string> me = new List<string>();
+            me.Add("Waldemar Dacko");
+            
+            foreach (TMSItem item in rmTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(me))
+            {
+                output.WriteLine(item.TMS);
+            }
+
+
+            output.WriteLine("\r\n-------ASSIGNED TO ME IN TMS-------");
+            me.Add("WALDEMARD");
+
+            foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(me))
+            {
+                output.WriteLine(item.TMS);
+            }
+
+
+            output.WriteLine("\r\n----------------------------");
         }
 
         private static TMSDictionary GetTMSDataFromRedMine(IOutputable output)

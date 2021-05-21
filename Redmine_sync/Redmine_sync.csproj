@@ -77,6 +77,11 @@
     <Compile Include="async.cs" />
     <Compile Include="CommonTools.cs" />
     <Compile Include="Consts.cs" />
+    <Compile Include="DataSets\MainDS.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MainDS.xsd</DependentUpon>
+    </Compile>
     <Compile Include="DBService.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="GUI\IOutputable.cs" />
@@ -108,6 +113,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="DataSets\MainDS.xsc">
+      <DependentUpon>MainDS.xsd</DependentUpon>
+    </None>
+    <None Include="DataSets\MainDS.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>MainDS.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="DataSets\MainDS.xss">
+      <DependentUpon>MainDS.xsd</DependentUpon>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

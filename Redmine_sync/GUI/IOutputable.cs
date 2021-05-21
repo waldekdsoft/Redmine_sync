@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace Redmine_sync.GUI
         void Write(string s, params object[] args);
         void WriteLine(string s, params object[] args);
 
-        
+        void WriteToGrid(DataTable dt);
+        //void WriteToGrid(DataSource ds);
     }
 }
