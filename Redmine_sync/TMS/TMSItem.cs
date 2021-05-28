@@ -19,6 +19,7 @@ namespace Redmine_sync.TMS
         public DateTime LastActDate { get; set; }
         public string Desctiption { get; set; }
         public string SDId { get; set; }
+        public string RMId { get; set; }
         public bool Used { get; set; } = false;
 
         public override string ToString()
@@ -38,6 +39,7 @@ namespace Redmine_sync.TMS
             Source = Consts.SRC_RM;
             AssignedTo = rmIssue.AssignedTo.TryGetName();
             Desctiption = rmIssue.Description;
+            RMId = rmIssue.Id.ToString();
 
             string[] subjectSplitted = rmIssue.Subject.Split('-');
             TMS = rmIssue.Subject.Split('-')[0].Trim() + "-" + rmIssue.Subject.Split('-')[1].Trim();

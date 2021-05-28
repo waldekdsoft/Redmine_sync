@@ -110,6 +110,7 @@
     <Compile Include="TMS\TMSDictionary.cs" />
     <Compile Include="TMS\TMSItem.cs" />
     <Compile Include="TMS\TMSTaskSynchronizer.cs" />
+    <Compile Include="Users\User.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

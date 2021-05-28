@@ -30,11 +30,11 @@ namespace Redmine_sync
         TMSDictionary rmTMSDict = null;
         Dictionary<string, List<TMS_TP>> outputList = null;
 
-        List<string> team_members = null;
-
         IOutputable output = null;
 
         static Dictionary<string /*client*/, TMSTaskSynchronizer> instancesDict = new Dictionary<string, TMSTaskSynchronizer>();
+
+       
 
         public static TMSTaskSynchronizer GetInstance(string client, IOutputable outp)
         {
@@ -52,7 +52,13 @@ namespace Redmine_sync
         {
             this.client = client;
             this.output = outp;
-            this.team_members = TeamService.GetDEV1TeamMembersTMSLogins(outp); ;
+        }
+
+        public void ClearCache()
+        {
+            dbTMSDict = null;
+            rmTMSDict = null;
+            output.WriteLine("Cache cleared...");
         }
 
         public void AddMissingTMSTasksToRedmine()
@@ -75,7 +81,7 @@ namespace Redmine_sync
             List<string> listOfAddedItems = new List<string>();
             List<string> listOfNOTAddedItems = new List<string>();
 
-            foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(team_members))
+            foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(TeamService.UsersTMSLogin))
             {
                 string description = item.Desctiption;
                 //check if really there is no such a TMS in RM (maybe it was already closed)
@@ -204,46 +210,67 @@ namespace Redmine_sync
 
             foreach (TMSItem itemFromRM in rmTMSDict.GetItemList())
             {
+                bool isRedmineAssignedToMyTeam = TeamService.IsPersonFromMyTeam(itemFromRM.AssignedTo);
+                bool isTMSAssignedtoMyTeam = false;
+
                 TMSItem dbTMSItem = dbTMSDict.Get(itemFromRM.TMS);
 
                 if (dbTMSItem != null)
                 {
-                    //ommit closed tasks
-                    if (dbTMSItem.Status.StartsWith("C") || dbTMSItem.Status.StartsWith("c"))
+                    isTMSAssignedtoMyTeam = TeamService.IsPersonFromMyTeam(dbTMSItem.AssignedTo);
+
+                    if (isRedmineAssignedToMyTeam || isTMSAssignedtoMyTeam)
                     {
-                        if (itemFromRM.Status == Consts.RM_CLOSED)
+                        //ommit closed tasks
+                        if (dbTMSItem.Status.StartsWith("C") || dbTMSItem.Status.StartsWith("c"))
                         {
-                            //ignore closed in TMS and in RM
-                            TMS_TP tp = new TMS_TP(dbTMSItem, itemFromRM);
-                            outputList.UpdateDictionary(Consts.RFC_BOTH_CLOSED, tp);
+                            if (itemFromRM.Status == Consts.RM_CLOSED)
+                            {
+                                //ignore closed in TMS and in RM
+                                TMS_TP tp = new TMS_TP(dbTMSItem, itemFromRM);
+                                outputList.UpdateDictionary(Consts.RFC_BOTH_CLOSED, tp);
+                            }
+                            else
+                            {
+                                TMS_TP tp = new TMS_TP(dbTMSItem, itemFromRM);
+                                outputList.UpdateDictionary(Consts.RFC_DIFFERENT_STATUSES, tp);
+                            }
                         }
                         else
                         {
-                            TMS_TP tp = new TMS_TP(dbTMSItem, itemFromRM);
-                            outputList.UpdateDictionary(Consts.RFC_DIFFERENT_STATUSES, tp);
+                            /*TODO*/
+                            //check if the task is assigned not to my team
+                            if (!TeamService.CheckIfSamePersonByTMSLoginAndFullName(dbTMSItem.AssignedTo, itemFromRM.AssignedTo))
+                            {
+                                TMS_TP tp = new TMS_TP(dbTMSItem, itemFromRM);
+                                outputList.UpdateDictionary(Consts.RFC_ASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS, tp);
+                            }
+                            else
+                            {
+                                //Console.WriteLine("{0}\nRM: {1}", dbTMSItem, itemFromRM);
+                                TMS_TP tp = new TMS_TP(dbTMSItem, itemFromRM);
+                                outputList.UpdateDictionary(Consts.RFC_BOTH_OK, tp);
+                            }
                         }
-                    }
-                    else
-                    {
-                        //Console.WriteLine("{0}\nRM: {1}", dbTMSItem, itemFromRM);
-                        TMS_TP tp = new TMS_TP(dbTMSItem, itemFromRM);
-                        outputList.UpdateDictionary(Consts.RFC_BOTH_OK, tp);
-
                     }
 
                 }
                 else
                 {
-                    TMS_TP tp = new TMS_TP(null, itemFromRM);
-                    //if the problem is not related to client TMS (so its subject does not start with "client")
-                    if (itemFromRM.TMS != null && !itemFromRM.TMS.StartsWith(client))
+
+                    if (isRedmineAssignedToMyTeam)
                     {
-                        outputList.UpdateDictionary(Consts.RFC_NOT_CONNECTED_WITH_TMS, tp);
-                        //Console.WriteLine("Element not connected with !: {0}", itemFromRM);
-                    }
-                    else
-                    {
-                        outputList.UpdateDictionary(Consts.RFC_NOT_EXISTS_IN_TMS, tp);
+                        TMS_TP tp = new TMS_TP(null, itemFromRM);
+                        //if the problem is not related to client TMS (so its subject does not start with "client")
+                        if (itemFromRM.TMS != null && !itemFromRM.TMS.StartsWith(client))
+                        {
+                            outputList.UpdateDictionary(Consts.RFC_NOT_CONNECTED_WITH_TMS, tp);
+                            //Console.WriteLine("Element not connected with !: {0}", itemFromRM);
+                        }
+                        else
+                        {
+                            outputList.UpdateDictionary(Consts.RFC_NOT_EXISTS_IN_TMS, tp);
+                        }
                     }
                 }
             }
@@ -276,7 +303,12 @@ namespace Redmine_sync
                     r["Reason"] = key;
                     if(tp.Item1 != null)
                         r["TMS"] = tp.Item1.TMS;
+                    
                     r["Text"] = tp.ToString();
+                    if (tp.Item2 != null)
+                    {
+                        r["RM"] = tp.Item2.RMId;
+                    }
                     dt.Rows.Add(r);
                 }
             }
@@ -285,7 +317,7 @@ namespace Redmine_sync
             output.WriteToGrid(dt);
 
             output.WriteLine("\r\n-------TMS not exist in RM-------");
-            foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(team_members))
+            foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(TeamService.UsersTMSLogin))
             {
                 output.WriteLine(item.ToString());
             }

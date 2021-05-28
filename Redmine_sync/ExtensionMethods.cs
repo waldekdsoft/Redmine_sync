@@ -13,7 +13,7 @@ namespace Redmine_sync
 {
     using TMS_TP = Tuple<TMSItem, TMSItem>;
     
-
+    
     public static class ExtensionMethods
     {
         //public static bool TryGetValueWithMarkingUsedValue(this Dictionary<string, TMSItem> dict, string key, out TMSItem value)
@@ -68,6 +68,32 @@ namespace Redmine_sync
             }
         }
 
+        public static string GetTMSUrgencyCustomFieldValue(this Redmine.Net.Api.Types.Issue issue)
+        {
+            return issue.GetCustomFieldValue("TMS Urgency");
+        }
+
+        public static string GetCustomFieldValue(this Redmine.Net.Api.Types.Issue issue, string customFieldName)
+        {
+            foreach (var customField in issue.CustomFields)
+            {
+                if (customField.Name == customFieldName)
+                {
+                    if (customField.Values != null)
+                    {
+                        foreach (CustomFieldValue cfValue in customField.Values) 
+                        {
+                            if (cfValue != null && cfValue.Info != null)
+                            {
+                                return cfValue.Info;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+
+        }
         public static void SerializeTMSItemData(this List<TMSItem> list)
         {
             System.IO.File.Delete("tms_db_items.xml");

@@ -15,7 +15,7 @@ namespace Redmine_sync
         public static string GET_ALL_DEV1_USERS = "SELECT * FROM DEV1_MEMBERS_VIEW";
 
         public static string DELETE_RM2XSLTABLE_CONTENT_FROM_TODAY = "delete from RM2XSLTABLE where TO_DATE(update_dt, 'yyyy/mm/dd') = TO_DATE(sysdate, 'yyyy/mm/dd')";
-        public static string INSERT_RM2XSLTABLE_RECORD = "insert into RM2XSLTABLE(rm_iss_num, rm_prj_name, rm_tracker, rm_status, rm_priority, rm_subject, rm_assignee, rm_updated, tms_task, update_dt) values(:rm_iss_num, :rm_prj_name, :rm_tracker, :rm_status, :rm_priority, :rm_subject, :rm_assignee, :rm_updated, :tms_task, sysdate)";
+        public static string INSERT_RM2XSLTABLE_RECORD = "insert into RM2XSLTABLE(rm_iss_num, rm_prj_name, rm_tracker, rm_status, rm_priority, rm_subject, rm_assignee, rm_updated, rm_tms_urgency, tms_task, update_dt) values(:rm_iss_num, :rm_prj_name, :rm_tracker, :rm_status, :rm_priority, :rm_subject, :rm_assignee, :rm_updated, :rm_tms_urgency, :tms_task, sysdate)";
         static DBService()
         {
             CONN_STRING = string.Format("User ID={0}; Password={1}; Data Source={2};", Properties.Resources.User, Properties.Resources.Hidden, Properties.Resources.dbstring);
@@ -65,6 +65,7 @@ using (OracleCommand command = new OracleCommand(commandText, connection))
                             command.Parameters.Add("rm_subject", issueFromRm.Subject);
                             command.Parameters.Add("rm_assignee", issueFromRm.AssignedTo.Name);
                             command.Parameters.Add("rm_updated", issueFromRm.UpdatedOn.Value);
+                            command.Parameters.Add("rm_tms_urgency", issueFromRm.GetTMSUrgencyCustomFieldValue());
                             string subject = issueFromRm.Subject;
                             string tms = string.Empty;
                             if (subject.StartsWith("MACBI-"))

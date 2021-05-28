@@ -52,14 +52,23 @@ namespace Redmine_sync.GUI
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.cbBOTH_OK = new System.Windows.Forms.CheckBox();
+            this.cbBOTH_CLOSED = new System.Windows.Forms.CheckBox();
+            this.cbNOT_CONNECTED_WITH_TMS = new System.Windows.Forms.CheckBox();
+            this.cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS = new System.Windows.Forms.CheckBox();
+            this.cbDIFFERENT_STATUSES = new System.Windows.Forms.CheckBox();
+            this.cbNOT_EXISTS_IN_RM = new System.Windows.Forms.CheckBox();
+            this.cbNOT_EXISTS_IN_TMS = new System.Windows.Forms.CheckBox();
+            this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.mainDS = new Redmine_sync.DataSets.MainDS();
             this.tMSWithReasonBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.mainDS = new Redmine_sync.DataSets.MainDS();
             this.reasonDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tMSDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewLinkColumn();
+            this.tMSDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.RM = new System.Windows.Forms.DataGridViewButtonColumn();
             this.textDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -72,8 +81,8 @@ namespace Redmine_sync.GUI
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.mainDS)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tMSWithReasonBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mainDS)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -85,7 +94,7 @@ namespace Redmine_sync.GUI
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1366, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1366, 30);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -94,7 +103,7 @@ namespace Redmine_sync.GUI
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(55, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(55, 26);
             this.fileToolStripMenuItem.Text = "File...";
             // 
             // exitToolStripMenuItem
@@ -111,7 +120,7 @@ namespace Redmine_sync.GUI
             this.tMSToolStripMenuItem,
             this.rM2XLSToolStripMenuItem});
             this.actionsToolStripMenuItem.Name = "actionsToolStripMenuItem";
-            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
+            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(72, 26);
             this.actionsToolStripMenuItem.Text = "Actions";
             // 
             // mOMToolStripMenuItem
@@ -202,7 +211,7 @@ namespace Redmine_sync.GUI
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(73, 26);
             this.aboutToolStripMenuItem.Text = "About...";
             // 
             // tbMainOutput
@@ -213,7 +222,7 @@ namespace Redmine_sync.GUI
             this.tbMainOutput.Multiline = true;
             this.tbMainOutput.Name = "tbMainOutput";
             this.tbMainOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbMainOutput.Size = new System.Drawing.Size(643, 551);
+            this.tbMainOutput.Size = new System.Drawing.Size(643, 451);
             this.tbMainOutput.TabIndex = 1;
             // 
             // statusStrip1
@@ -235,7 +244,7 @@ namespace Redmine_sync.GUI
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 28);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 30);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -245,12 +254,20 @@ namespace Redmine_sync.GUI
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.cbBOTH_OK);
+            this.splitContainer1.Panel2.Controls.Add(this.cbBOTH_CLOSED);
+            this.splitContainer1.Panel2.Controls.Add(this.cbNOT_CONNECTED_WITH_TMS);
+            this.splitContainer1.Panel2.Controls.Add(this.cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS);
+            this.splitContainer1.Panel2.Controls.Add(this.cbDIFFERENT_STATUSES);
+            this.splitContainer1.Panel2.Controls.Add(this.cbNOT_EXISTS_IN_RM);
+            this.splitContainer1.Panel2.Controls.Add(this.cbNOT_EXISTS_IN_TMS);
+            this.splitContainer1.Panel2.Controls.Add(this.button5);
             this.splitContainer1.Panel2.Controls.Add(this.button4);
             this.splitContainer1.Panel2.Controls.Add(this.button3);
             this.splitContainer1.Panel2.Controls.Add(this.button2);
             this.splitContainer1.Panel2.Controls.Add(this.button1);
-            this.splitContainer1.Size = new System.Drawing.Size(1366, 630);
-            this.splitContainer1.SplitterDistance = 551;
+            this.splitContainer1.Size = new System.Drawing.Size(1366, 628);
+            this.splitContainer1.SplitterDistance = 451;
             this.splitContainer1.TabIndex = 3;
             // 
             // splitContainer2
@@ -266,7 +283,7 @@ namespace Redmine_sync.GUI
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tbMainOutput);
-            this.splitContainer2.Size = new System.Drawing.Size(1366, 551);
+            this.splitContainer2.Size = new System.Drawing.Size(1366, 451);
             this.splitContainer2.SplitterDistance = 719;
             this.splitContainer2.TabIndex = 2;
             // 
@@ -277,6 +294,7 @@ namespace Redmine_sync.GUI
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.reasonDataGridViewTextBoxColumn,
             this.tMSDataGridViewTextBoxColumn,
+            this.RM,
             this.textDataGridViewTextBoxColumn});
             this.dataGridView1.DataSource = this.tMSWithReasonBindingSource;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -284,36 +302,125 @@ namespace Redmine_sync.GUI
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(719, 551);
+            this.dataGridView1.Size = new System.Drawing.Size(719, 451);
             this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dataGridView1.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridView1_DataBindingComplete);
+            // 
+            // cbBOTH_OK
+            // 
+            this.cbBOTH_OK.AutoSize = true;
+            this.cbBOTH_OK.Location = new System.Drawing.Point(1074, 51);
+            this.cbBOTH_OK.Name = "cbBOTH_OK";
+            this.cbBOTH_OK.Size = new System.Drawing.Size(83, 21);
+            this.cbBOTH_OK.TabIndex = 11;
+            this.cbBOTH_OK.Text = "Both OK";
+            this.cbBOTH_OK.UseVisualStyleBackColor = true;
+            this.cbBOTH_OK.CheckedChanged += new System.EventHandler(this.cb_CheckedChanged);
+            // 
+            // cbBOTH_CLOSED
+            // 
+            this.cbBOTH_CLOSED.AutoSize = true;
+            this.cbBOTH_CLOSED.Location = new System.Drawing.Point(1074, 20);
+            this.cbBOTH_CLOSED.Name = "cbBOTH_CLOSED";
+            this.cbBOTH_CLOSED.Size = new System.Drawing.Size(104, 21);
+            this.cbBOTH_CLOSED.TabIndex = 10;
+            this.cbBOTH_CLOSED.Text = "Both closed";
+            this.cbBOTH_CLOSED.UseVisualStyleBackColor = true;
+            this.cbBOTH_CLOSED.CheckedChanged += new System.EventHandler(this.cb_CheckedChanged);
+            // 
+            // cbNOT_CONNECTED_WITH_TMS
+            // 
+            this.cbNOT_CONNECTED_WITH_TMS.AutoSize = true;
+            this.cbNOT_CONNECTED_WITH_TMS.Location = new System.Drawing.Point(850, 137);
+            this.cbNOT_CONNECTED_WITH_TMS.Name = "cbNOT_CONNECTED_WITH_TMS";
+            this.cbNOT_CONNECTED_WITH_TMS.Size = new System.Drawing.Size(183, 21);
+            this.cbNOT_CONNECTED_WITH_TMS.TabIndex = 9;
+            this.cbNOT_CONNECTED_WITH_TMS.Text = "Not connected with TMS";
+            this.cbNOT_CONNECTED_WITH_TMS.UseVisualStyleBackColor = true;
+            this.cbNOT_CONNECTED_WITH_TMS.CheckedChanged += new System.EventHandler(this.cb_CheckedChanged);
+            // 
+            // cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS
+            // 
+            this.cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS.AutoSize = true;
+            this.cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS.Location = new System.Drawing.Point(850, 110);
+            this.cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS.Name = "cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS";
+            this.cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS.Size = new System.Drawing.Size(309, 21);
+            this.cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS.TabIndex = 8;
+            this.cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS.Text = "Assigned to different person in RM and TMS";
+            this.cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS.UseVisualStyleBackColor = true;
+            this.cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS.CheckedChanged += new System.EventHandler(this.cb_CheckedChanged);
+            // 
+            // cbDIFFERENT_STATUSES
+            // 
+            this.cbDIFFERENT_STATUSES.AutoSize = true;
+            this.cbDIFFERENT_STATUSES.Location = new System.Drawing.Point(850, 83);
+            this.cbDIFFERENT_STATUSES.Name = "cbDIFFERENT_STATUSES";
+            this.cbDIFFERENT_STATUSES.Size = new System.Drawing.Size(141, 21);
+            this.cbDIFFERENT_STATUSES.TabIndex = 7;
+            this.cbDIFFERENT_STATUSES.Text = "Different statuses";
+            this.cbDIFFERENT_STATUSES.UseVisualStyleBackColor = true;
+            this.cbDIFFERENT_STATUSES.CheckedChanged += new System.EventHandler(this.cb_CheckedChanged);
+            // 
+            // cbNOT_EXISTS_IN_RM
+            // 
+            this.cbNOT_EXISTS_IN_RM.AutoSize = true;
+            this.cbNOT_EXISTS_IN_RM.Location = new System.Drawing.Point(850, 51);
+            this.cbNOT_EXISTS_IN_RM.Name = "cbNOT_EXISTS_IN_RM";
+            this.cbNOT_EXISTS_IN_RM.Size = new System.Drawing.Size(131, 21);
+            this.cbNOT_EXISTS_IN_RM.TabIndex = 6;
+            this.cbNOT_EXISTS_IN_RM.Text = "Not exists in RM";
+            this.cbNOT_EXISTS_IN_RM.UseVisualStyleBackColor = true;
+            this.cbNOT_EXISTS_IN_RM.CheckedChanged += new System.EventHandler(this.cb_CheckedChanged);
+            // 
+            // cbNOT_EXISTS_IN_TMS
+            // 
+            this.cbNOT_EXISTS_IN_TMS.AutoSize = true;
+            this.cbNOT_EXISTS_IN_TMS.Location = new System.Drawing.Point(850, 20);
+            this.cbNOT_EXISTS_IN_TMS.Name = "cbNOT_EXISTS_IN_TMS";
+            this.cbNOT_EXISTS_IN_TMS.Size = new System.Drawing.Size(139, 21);
+            this.cbNOT_EXISTS_IN_TMS.TabIndex = 5;
+            this.cbNOT_EXISTS_IN_TMS.Text = "Not exists in TMS";
+            this.cbNOT_EXISTS_IN_TMS.UseVisualStyleBackColor = true;
+            this.cbNOT_EXISTS_IN_TMS.CheckedChanged += new System.EventHandler(this.cb_CheckedChanged);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(260, 78);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(244, 29);
+            this.button5.TabIndex = 4;
+            this.button5.Text = "TMS: Clear cache";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(255, 42);
+            this.button4.Location = new System.Drawing.Point(507, 12);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(237, 29);
+            this.button4.Size = new System.Drawing.Size(244, 29);
             this.button4.TabIndex = 3;
-            this.button4.Text = "Add RM data to SD database";
+            this.button4.Text = "RM2XLS: Add RM data to SD database";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(255, 12);
+            this.button3.Location = new System.Drawing.Point(260, 43);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(237, 29);
+            this.button3.Size = new System.Drawing.Size(244, 29);
             this.button3.TabIndex = 2;
-            this.button3.Text = "Add missing TMS to RM...";
+            this.button3.Text = "TMS: Add missing TMS to RM...";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(14, 42);
+            this.button2.Location = new System.Drawing.Point(260, 12);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(235, 29);
+            this.button2.Size = new System.Drawing.Size(244, 29);
             this.button2.TabIndex = 1;
-            this.button2.Text = "Show sync. info...";
+            this.button2.Text = "TMS: Show sync. info...";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -321,21 +428,21 @@ namespace Redmine_sync.GUI
             // 
             this.button1.Location = new System.Drawing.Point(12, 12);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(237, 29);
+            this.button1.Size = new System.Drawing.Size(244, 29);
             this.button1.TabIndex = 0;
-            this.button1.Text = "Add new items (moms.xml)";
+            this.button1.Text = "MOM: Add new items (moms.xml)";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // mainDS
-            // 
-            this.mainDS.DataSetName = "MainDS";
-            this.mainDS.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
             // 
             // tMSWithReasonBindingSource
             // 
             this.tMSWithReasonBindingSource.DataMember = "TMSWithReason";
             this.tMSWithReasonBindingSource.DataSource = this.mainDS;
+            // 
+            // mainDS
+            // 
+            this.mainDS.DataSetName = "MainDS";
+            this.mainDS.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
             // 
             // reasonDataGridViewTextBoxColumn
             // 
@@ -343,17 +450,28 @@ namespace Redmine_sync.GUI
             this.reasonDataGridViewTextBoxColumn.HeaderText = "Reason";
             this.reasonDataGridViewTextBoxColumn.MinimumWidth = 6;
             this.reasonDataGridViewTextBoxColumn.Name = "reasonDataGridViewTextBoxColumn";
+            this.reasonDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.reasonDataGridViewTextBoxColumn.Width = 125;
             // 
             // tMSDataGridViewTextBoxColumn
             // 
             this.tMSDataGridViewTextBoxColumn.DataPropertyName = "TMS";
-            this.tMSDataGridViewTextBoxColumn.HeaderText = "TMS";
+            this.tMSDataGridViewTextBoxColumn.HeaderText = "TMS Link";
             this.tMSDataGridViewTextBoxColumn.MinimumWidth = 6;
             this.tMSDataGridViewTextBoxColumn.Name = "tMSDataGridViewTextBoxColumn";
             this.tMSDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.tMSDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             this.tMSDataGridViewTextBoxColumn.Width = 125;
+            // 
+            // RM
+            // 
+            this.RM.DataPropertyName = "RM";
+            this.RM.HeaderText = "RM Link";
+            this.RM.MinimumWidth = 6;
+            this.RM.Name = "RM";
+            this.RM.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.RM.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.RM.Width = 125;
             // 
             // textDataGridViewTextBoxColumn
             // 
@@ -381,6 +499,7 @@ namespace Redmine_sync.GUI
             this.statusStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
@@ -389,8 +508,8 @@ namespace Redmine_sync.GUI
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.mainDS)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tMSWithReasonBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mainDS)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -424,10 +543,19 @@ namespace Redmine_sync.GUI
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn reasonDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewLinkColumn tMSDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn textDataGridViewTextBoxColumn;
         private System.Windows.Forms.BindingSource tMSWithReasonBindingSource;
         private DataSets.MainDS mainDS;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.CheckBox cbDIFFERENT_STATUSES;
+        private System.Windows.Forms.CheckBox cbNOT_EXISTS_IN_RM;
+        private System.Windows.Forms.CheckBox cbNOT_EXISTS_IN_TMS;
+        private System.Windows.Forms.CheckBox cbASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS;
+        private System.Windows.Forms.CheckBox cbBOTH_OK;
+        private System.Windows.Forms.CheckBox cbBOTH_CLOSED;
+        private System.Windows.Forms.CheckBox cbNOT_CONNECTED_WITH_TMS;
+        private System.Windows.Forms.DataGridViewTextBoxColumn reasonDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewButtonColumn tMSDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewButtonColumn RM;
+        private System.Windows.Forms.DataGridViewTextBoxColumn textDataGridViewTextBoxColumn;
     }
 }

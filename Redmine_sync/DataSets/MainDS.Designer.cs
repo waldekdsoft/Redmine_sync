@@ -285,6 +285,8 @@ namespace Redmine_sync.DataSets {
             
             private global::System.Data.DataColumn columnText;
             
+            private global::System.Data.DataColumn columnRM;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public TMSWithReasonDataTable() {
@@ -344,6 +346,14 @@ namespace Redmine_sync.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn RMColumn {
+                get {
+                    return this.columnRM;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -379,12 +389,13 @@ namespace Redmine_sync.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public TMSWithReasonRow AddTMSWithReasonRow(string Reason, string TMS, string Text) {
+            public TMSWithReasonRow AddTMSWithReasonRow(string Reason, string TMS, string Text, string RM) {
                 TMSWithReasonRow rowTMSWithReasonRow = ((TMSWithReasonRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         Reason,
                         TMS,
-                        Text};
+                        Text,
+                        RM};
                 rowTMSWithReasonRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowTMSWithReasonRow);
                 return rowTMSWithReasonRow;
@@ -410,6 +421,7 @@ namespace Redmine_sync.DataSets {
                 this.columnReason = base.Columns["Reason"];
                 this.columnTMS = base.Columns["TMS"];
                 this.columnText = base.Columns["Text"];
+                this.columnRM = base.Columns["RM"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -421,6 +433,8 @@ namespace Redmine_sync.DataSets {
                 base.Columns.Add(this.columnTMS);
                 this.columnText = new global::System.Data.DataColumn("Text", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnText);
+                this.columnRM = new global::System.Data.DataColumn("RM", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnRM);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -611,6 +625,22 @@ namespace Redmine_sync.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string RM {
+                get {
+                    try {
+                        return ((string)(this[this.tableTMSWithReason.RMColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'RM\' in table \'TMSWithReason\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableTMSWithReason.RMColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsReasonNull() {
                 return this.IsNull(this.tableTMSWithReason.ReasonColumn);
             }
@@ -643,6 +673,18 @@ namespace Redmine_sync.DataSets {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetTextNull() {
                 this[this.tableTMSWithReason.TextColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsRMNull() {
+                return this.IsNull(this.tableTMSWithReason.RMColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetRMNull() {
+                this[this.tableTMSWithReason.RMColumn] = global::System.Convert.DBNull;
             }
         }
         
