@@ -19,6 +19,11 @@
               <xs:element name="TMS" msprop:Generator_ColumnVarNameInTable="columnTMS" msprop:Generator_ColumnPropNameInRow="TMS" msprop:Generator_ColumnPropNameInTable="TMSColumn" msprop:Generator_UserColumnName="TMS" type="xs:string" minOccurs="0" />
               <xs:element name="Text" msprop:Generator_ColumnVarNameInTable="columnText" msprop:Generator_ColumnPropNameInRow="Text" msprop:Generator_ColumnPropNameInTable="TextColumn" msprop:Generator_UserColumnName="Text" type="xs:string" minOccurs="0" />
               <xs:element name="RM" msprop:Generator_ColumnVarNameInTable="columnRM" msprop:Generator_ColumnPropNameInRow="RM" msprop:Generator_ColumnPropNameInTable="RMColumn" msprop:Generator_UserColumnName="RM" type="xs:string" minOccurs="0" />
+              <xs:element name="Me" msprop:Generator_ColumnVarNameInTable="columnMe" msprop:Generator_ColumnPropNameInRow="Me" msprop:Generator_ColumnPropNameInTable="MeColumn" msprop:Generator_UserColumnName="Me" type="xs:string" minOccurs="0" />
+              <xs:element name="TMS_ASSIGNED" msprop:Generator_ColumnVarNameInTable="columnTMS_ASSIGNED" msprop:Generator_ColumnPropNameInRow="TMS_ASSIGNED" msprop:Generator_ColumnPropNameInTable="TMS_ASSIGNEDColumn" msprop:Generator_UserColumnName="TMS_ASSIGNED" type="xs:string" minOccurs="0" />
+              <xs:element name="TMS_STATUS" msprop:Generator_ColumnVarNameInTable="columnTMS_STATUS" msprop:Generator_ColumnPropNameInRow="TMS_STATUS" msprop:Generator_ColumnPropNameInTable="TMS_STATUSColumn" msprop:Generator_UserColumnName="TMS_STATUS" type="xs:string" minOccurs="0" />
+              <xs:element name="RM_ASSIGNED" msprop:Generator_ColumnVarNameInTable="columnRM_ASSIGNED" msprop:Generator_ColumnPropNameInRow="RM_ASSIGNED" msprop:Generator_ColumnPropNameInTable="RM_ASSIGNEDColumn" msprop:Generator_UserColumnName="RM_ASSIGNED" type="xs:string" minOccurs="0" />
+              <xs:element name="RM_STATUS" msprop:Generator_ColumnVarNameInTable="columnRM_STATUS" msprop:Generator_ColumnPropNameInRow="RM_STATUS" msprop:Generator_ColumnPropNameInTable="RM_STATUSColumn" msprop:Generator_UserColumnName="RM_STATUS" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

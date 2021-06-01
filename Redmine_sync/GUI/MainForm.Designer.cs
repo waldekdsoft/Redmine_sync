@@ -52,6 +52,9 @@ namespace Redmine_sync.GUI
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.tMSWithReasonBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.mainDS = new Redmine_sync.DataSets.MainDS();
+            this.cbME = new System.Windows.Forms.CheckBox();
             this.cbBOTH_OK = new System.Windows.Forms.CheckBox();
             this.cbBOTH_CLOSED = new System.Windows.Forms.CheckBox();
             this.cbNOT_CONNECTED_WITH_TMS = new System.Windows.Forms.CheckBox();
@@ -64,12 +67,14 @@ namespace Redmine_sync.GUI
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.tMSWithReasonBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.mainDS = new Redmine_sync.DataSets.MainDS();
             this.reasonDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.chDataGridViewCheckBoxColumnMe = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.tMSDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewButtonColumn();
             this.RM = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.textDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TMS_ASSIGNED = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TMS_STATUS = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RM_ASSIGNED = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RM_STATUS = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -94,7 +99,7 @@ namespace Redmine_sync.GUI
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1366, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1366, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -103,7 +108,7 @@ namespace Redmine_sync.GUI
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(55, 26);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(55, 24);
             this.fileToolStripMenuItem.Text = "File...";
             // 
             // exitToolStripMenuItem
@@ -120,7 +125,7 @@ namespace Redmine_sync.GUI
             this.tMSToolStripMenuItem,
             this.rM2XLSToolStripMenuItem});
             this.actionsToolStripMenuItem.Name = "actionsToolStripMenuItem";
-            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(72, 26);
+            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
             this.actionsToolStripMenuItem.Text = "Actions";
             // 
             // mOMToolStripMenuItem
@@ -211,7 +216,7 @@ namespace Redmine_sync.GUI
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(73, 26);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
             this.aboutToolStripMenuItem.Text = "About...";
             // 
             // tbMainOutput
@@ -222,7 +227,7 @@ namespace Redmine_sync.GUI
             this.tbMainOutput.Multiline = true;
             this.tbMainOutput.Name = "tbMainOutput";
             this.tbMainOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbMainOutput.Size = new System.Drawing.Size(643, 451);
+            this.tbMainOutput.Size = new System.Drawing.Size(643, 450);
             this.tbMainOutput.TabIndex = 1;
             // 
             // statusStrip1
@@ -244,7 +249,7 @@ namespace Redmine_sync.GUI
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 30);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 28);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -254,6 +259,7 @@ namespace Redmine_sync.GUI
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.cbME);
             this.splitContainer1.Panel2.Controls.Add(this.cbBOTH_OK);
             this.splitContainer1.Panel2.Controls.Add(this.cbBOTH_CLOSED);
             this.splitContainer1.Panel2.Controls.Add(this.cbNOT_CONNECTED_WITH_TMS);
@@ -266,8 +272,8 @@ namespace Redmine_sync.GUI
             this.splitContainer1.Panel2.Controls.Add(this.button3);
             this.splitContainer1.Panel2.Controls.Add(this.button2);
             this.splitContainer1.Panel2.Controls.Add(this.button1);
-            this.splitContainer1.Size = new System.Drawing.Size(1366, 628);
-            this.splitContainer1.SplitterDistance = 451;
+            this.splitContainer1.Size = new System.Drawing.Size(1366, 630);
+            this.splitContainer1.SplitterDistance = 450;
             this.splitContainer1.TabIndex = 3;
             // 
             // splitContainer2
@@ -283,7 +289,7 @@ namespace Redmine_sync.GUI
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tbMainOutput);
-            this.splitContainer2.Size = new System.Drawing.Size(1366, 451);
+            this.splitContainer2.Size = new System.Drawing.Size(1366, 450);
             this.splitContainer2.SplitterDistance = 719;
             this.splitContainer2.TabIndex = 2;
             // 
@@ -293,19 +299,44 @@ namespace Redmine_sync.GUI
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.reasonDataGridViewTextBoxColumn,
+            this.chDataGridViewCheckBoxColumnMe,
             this.tMSDataGridViewTextBoxColumn,
             this.RM,
-            this.textDataGridViewTextBoxColumn});
+            this.TMS_ASSIGNED,
+            this.TMS_STATUS,
+            this.RM_ASSIGNED,
+            this.RM_STATUS});
             this.dataGridView1.DataSource = this.tMSWithReasonBindingSource;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(719, 451);
+            this.dataGridView1.Size = new System.Drawing.Size(719, 450);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dataGridView1.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridView1_DataBindingComplete);
+            // 
+            // tMSWithReasonBindingSource
+            // 
+            this.tMSWithReasonBindingSource.DataMember = "TMSWithReason";
+            this.tMSWithReasonBindingSource.DataSource = this.mainDS;
+            // 
+            // mainDS
+            // 
+            this.mainDS.DataSetName = "MainDS";
+            this.mainDS.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // cbME
+            // 
+            this.cbME.AutoSize = true;
+            this.cbME.Location = new System.Drawing.Point(1074, 137);
+            this.cbME.Name = "cbME";
+            this.cbME.Size = new System.Drawing.Size(152, 21);
+            this.cbME.TabIndex = 12;
+            this.cbME.Text = "Only Me mentioned";
+            this.cbME.UseVisualStyleBackColor = true;
+            this.cbME.CheckedChanged += new System.EventHandler(this.cb_CheckedChanged);
             // 
             // cbBOTH_OK
             // 
@@ -434,16 +465,6 @@ namespace Redmine_sync.GUI
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // tMSWithReasonBindingSource
-            // 
-            this.tMSWithReasonBindingSource.DataMember = "TMSWithReason";
-            this.tMSWithReasonBindingSource.DataSource = this.mainDS;
-            // 
-            // mainDS
-            // 
-            this.mainDS.DataSetName = "MainDS";
-            this.mainDS.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
             // reasonDataGridViewTextBoxColumn
             // 
             this.reasonDataGridViewTextBoxColumn.DataPropertyName = "Reason";
@@ -452,6 +473,16 @@ namespace Redmine_sync.GUI
             this.reasonDataGridViewTextBoxColumn.Name = "reasonDataGridViewTextBoxColumn";
             this.reasonDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.reasonDataGridViewTextBoxColumn.Width = 125;
+            // 
+            // chDataGridViewCheckBoxColumnMe
+            // 
+            this.chDataGridViewCheckBoxColumnMe.DataPropertyName = "Me";
+            this.chDataGridViewCheckBoxColumnMe.FalseValue = "N";
+            this.chDataGridViewCheckBoxColumnMe.HeaderText = "ME";
+            this.chDataGridViewCheckBoxColumnMe.MinimumWidth = 6;
+            this.chDataGridViewCheckBoxColumnMe.Name = "chDataGridViewCheckBoxColumnMe";
+            this.chDataGridViewCheckBoxColumnMe.TrueValue = "Y";
+            this.chDataGridViewCheckBoxColumnMe.Width = 125;
             // 
             // tMSDataGridViewTextBoxColumn
             // 
@@ -473,13 +504,37 @@ namespace Redmine_sync.GUI
             this.RM.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             this.RM.Width = 125;
             // 
-            // textDataGridViewTextBoxColumn
+            // TMS_ASSIGNED
             // 
-            this.textDataGridViewTextBoxColumn.DataPropertyName = "Text";
-            this.textDataGridViewTextBoxColumn.HeaderText = "Text";
-            this.textDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.textDataGridViewTextBoxColumn.Name = "textDataGridViewTextBoxColumn";
-            this.textDataGridViewTextBoxColumn.Width = 125;
+            this.TMS_ASSIGNED.DataPropertyName = "TMS_ASSIGNED";
+            this.TMS_ASSIGNED.HeaderText = "TMS Assigned To";
+            this.TMS_ASSIGNED.MinimumWidth = 6;
+            this.TMS_ASSIGNED.Name = "TMS_ASSIGNED";
+            this.TMS_ASSIGNED.Width = 125;
+            // 
+            // TMS_STATUS
+            // 
+            this.TMS_STATUS.DataPropertyName = "TMS_STATUS";
+            this.TMS_STATUS.HeaderText = "TMS Status";
+            this.TMS_STATUS.MinimumWidth = 6;
+            this.TMS_STATUS.Name = "TMS_STATUS";
+            this.TMS_STATUS.Width = 125;
+            // 
+            // RM_ASSIGNED
+            // 
+            this.RM_ASSIGNED.DataPropertyName = "RM_ASSIGNED";
+            this.RM_ASSIGNED.HeaderText = "RM Assigned To";
+            this.RM_ASSIGNED.MinimumWidth = 6;
+            this.RM_ASSIGNED.Name = "RM_ASSIGNED";
+            this.RM_ASSIGNED.Width = 125;
+            // 
+            // RM_STATUS
+            // 
+            this.RM_STATUS.DataPropertyName = "RM_STATUS";
+            this.RM_STATUS.HeaderText = "RM Status";
+            this.RM_STATUS.MinimumWidth = 6;
+            this.RM_STATUS.Name = "RM_STATUS";
+            this.RM_STATUS.Width = 125;
             // 
             // MainForm
             // 
@@ -553,9 +608,14 @@ namespace Redmine_sync.GUI
         private System.Windows.Forms.CheckBox cbBOTH_OK;
         private System.Windows.Forms.CheckBox cbBOTH_CLOSED;
         private System.Windows.Forms.CheckBox cbNOT_CONNECTED_WITH_TMS;
+        private System.Windows.Forms.CheckBox cbME;
         private System.Windows.Forms.DataGridViewTextBoxColumn reasonDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn chDataGridViewCheckBoxColumnMe;
         private System.Windows.Forms.DataGridViewButtonColumn tMSDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewButtonColumn RM;
-        private System.Windows.Forms.DataGridViewTextBoxColumn textDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn TMS_ASSIGNED;
+        private System.Windows.Forms.DataGridViewTextBoxColumn TMS_STATUS;
+        private System.Windows.Forms.DataGridViewTextBoxColumn RM_ASSIGNED;
+        private System.Windows.Forms.DataGridViewTextBoxColumn RM_STATUS;
     }
 }

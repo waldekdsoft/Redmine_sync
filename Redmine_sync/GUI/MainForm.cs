@@ -114,16 +114,16 @@ namespace Redmine_sync.GUI
                         e.Value = "Not in RM";
                         break;
                     case "RFC_DIFFERENT_STATUSES":
-                        e.Value = "Different statuses";
+                        e.Value = "Diff. statuses";
                         break;
                     case "RFC_ASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS":
-                        e.Value = "Different PRG in TMS and RM";
+                        e.Value = "Diff. PRGs";
                         break;
                     case "RFC_NOT_CONNECTED_WITH_TMS":
                         e.Value = "No TMS";
                         break;
                     case "RFC_BOTH_CLOSED":
-                        e.Value = "Both closed";
+                        e.Value = "Closed";
                         break;
                     case "RFC_BOTH_OK":
                         e.Value = "OK";
@@ -155,7 +155,6 @@ namespace Redmine_sync.GUI
         {
             AddNewItems();
         }
-
 
         private void ShowSyncInfo()
         {
@@ -198,7 +197,8 @@ namespace Redmine_sync.GUI
             dataGridView1.Refresh();
             dataGridView1.DataSource = dt;
             dataGridView1.Dock = DockStyle.Fill;
-            
+            ApplyChosenFilters();
+
             /*
             foreach (DataGridViewRow r in dataGridView1.Rows)
             {
@@ -218,7 +218,7 @@ namespace Redmine_sync.GUI
                 //}
 
             }*/
-           
+
         }
 
 
@@ -268,13 +268,11 @@ namespace Redmine_sync.GUI
 
         private void cb_CheckedChanged(object sender, EventArgs e)
         {
-            /*            CheckBox cb = sender as CheckBox;
-                        if (cb != null)
-                        {
-                            string option = cb.Name.Substring(2);
+            ApplyChosenFilters();
+        }
 
-                            if (!string.IsNullOrEmpty(option))
-                            {*/
+        private void ApplyChosenFilters()
+        {
             DataTable dt = dataGridView1.DataSource as DataTable;
             if (dt != null)
             {
@@ -290,6 +288,16 @@ namespace Redmine_sync.GUI
                         }
                         filter += string.Format("Reason = 'RFC_{0}'", cb.Name.Substring(2));
                     }
+                }
+
+                if (cbME.Checked)
+                {
+                    if (!string.IsNullOrWhiteSpace(filter))
+                    {
+                        filter += " AND ";
+                    }
+                    filter += "ME = 'Y'";
+
                 }
                 dt.DefaultView.RowFilter = filter;
                 dataGridView1.Refresh();
@@ -308,7 +316,7 @@ namespace Redmine_sync.GUI
             DataGridViewButtonCell cell = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell;
             if (cell != null)
             {
-                if (e.ColumnIndex == 1)/*TMS*/
+                if (e.ColumnIndex == 2)/*TMS*/
                 {
                     string tms = Convert.ToString(cell.Value);
 
@@ -327,7 +335,7 @@ namespace Redmine_sync.GUI
                     }
                 }
                 else
-                    if (e.ColumnIndex == 2)
+                    if (e.ColumnIndex == 3)
                 {
                     string rmId = Convert.ToString(cell.Value);
 

@@ -301,13 +301,29 @@ namespace Redmine_sync
                     //output.WriteLine(tp.ToString());
                     DataRow r = dt.NewRow();
                     r["Reason"] = key;
-                    if(tp.Item1 != null)
+                    if (tp.Item1 != null)
+                    {
                         r["TMS"] = tp.Item1.TMS;
+                        r["TMS_Assigned"] = tp.Item1.AssignedTo;
+                        r["TMS_Status"] = tp.Item1.Status;
+                    }
                     
-                    r["Text"] = tp.ToString();
+                    string text = tp.ToString();
+                    //r["Text"] = text;
+
+
+
+                    if (text != null && (text.Contains("WALDEMAR") || text.Contains("waldekd") || text.Contains("Waldemar")))
+                    {
+                        r["Me"] = "Y";
+                    }
+                    
                     if (tp.Item2 != null)
                     {
                         r["RM"] = tp.Item2.RMId;
+                        r["RM_Assigned"] = tp.Item2.AssignedTo;
+                        r["RM_Status"] = tp.Item2.Status;
+
                     }
                     dt.Rows.Add(r);
                 }

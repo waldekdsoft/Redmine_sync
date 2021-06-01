@@ -287,6 +287,16 @@ namespace Redmine_sync.DataSets {
             
             private global::System.Data.DataColumn columnRM;
             
+            private global::System.Data.DataColumn columnMe;
+            
+            private global::System.Data.DataColumn columnTMS_ASSIGNED;
+            
+            private global::System.Data.DataColumn columnTMS_STATUS;
+            
+            private global::System.Data.DataColumn columnRM_ASSIGNED;
+            
+            private global::System.Data.DataColumn columnRM_STATUS;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public TMSWithReasonDataTable() {
@@ -354,6 +364,46 @@ namespace Redmine_sync.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn MeColumn {
+                get {
+                    return this.columnMe;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn TMS_ASSIGNEDColumn {
+                get {
+                    return this.columnTMS_ASSIGNED;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn TMS_STATUSColumn {
+                get {
+                    return this.columnTMS_STATUS;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn RM_ASSIGNEDColumn {
+                get {
+                    return this.columnRM_ASSIGNED;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn RM_STATUSColumn {
+                get {
+                    return this.columnRM_STATUS;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -389,13 +439,18 @@ namespace Redmine_sync.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public TMSWithReasonRow AddTMSWithReasonRow(string Reason, string TMS, string Text, string RM) {
+            public TMSWithReasonRow AddTMSWithReasonRow(string Reason, string TMS, string Text, string RM, string Me, string TMS_ASSIGNED, string TMS_STATUS, string RM_ASSIGNED, string RM_STATUS) {
                 TMSWithReasonRow rowTMSWithReasonRow = ((TMSWithReasonRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         Reason,
                         TMS,
                         Text,
-                        RM};
+                        RM,
+                        Me,
+                        TMS_ASSIGNED,
+                        TMS_STATUS,
+                        RM_ASSIGNED,
+                        RM_STATUS};
                 rowTMSWithReasonRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowTMSWithReasonRow);
                 return rowTMSWithReasonRow;
@@ -422,6 +477,11 @@ namespace Redmine_sync.DataSets {
                 this.columnTMS = base.Columns["TMS"];
                 this.columnText = base.Columns["Text"];
                 this.columnRM = base.Columns["RM"];
+                this.columnMe = base.Columns["Me"];
+                this.columnTMS_ASSIGNED = base.Columns["TMS_ASSIGNED"];
+                this.columnTMS_STATUS = base.Columns["TMS_STATUS"];
+                this.columnRM_ASSIGNED = base.Columns["RM_ASSIGNED"];
+                this.columnRM_STATUS = base.Columns["RM_STATUS"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -435,6 +495,16 @@ namespace Redmine_sync.DataSets {
                 base.Columns.Add(this.columnText);
                 this.columnRM = new global::System.Data.DataColumn("RM", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnRM);
+                this.columnMe = new global::System.Data.DataColumn("Me", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnMe);
+                this.columnTMS_ASSIGNED = new global::System.Data.DataColumn("TMS_ASSIGNED", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTMS_ASSIGNED);
+                this.columnTMS_STATUS = new global::System.Data.DataColumn("TMS_STATUS", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTMS_STATUS);
+                this.columnRM_ASSIGNED = new global::System.Data.DataColumn("RM_ASSIGNED", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnRM_ASSIGNED);
+                this.columnRM_STATUS = new global::System.Data.DataColumn("RM_STATUS", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnRM_STATUS);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -641,6 +711,86 @@ namespace Redmine_sync.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string Me {
+                get {
+                    try {
+                        return ((string)(this[this.tableTMSWithReason.MeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Me\' in table \'TMSWithReason\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableTMSWithReason.MeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string TMS_ASSIGNED {
+                get {
+                    try {
+                        return ((string)(this[this.tableTMSWithReason.TMS_ASSIGNEDColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'TMS_ASSIGNED\' in table \'TMSWithReason\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableTMSWithReason.TMS_ASSIGNEDColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string TMS_STATUS {
+                get {
+                    try {
+                        return ((string)(this[this.tableTMSWithReason.TMS_STATUSColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'TMS_STATUS\' in table \'TMSWithReason\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableTMSWithReason.TMS_STATUSColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string RM_ASSIGNED {
+                get {
+                    try {
+                        return ((string)(this[this.tableTMSWithReason.RM_ASSIGNEDColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'RM_ASSIGNED\' in table \'TMSWithReason\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableTMSWithReason.RM_ASSIGNEDColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string RM_STATUS {
+                get {
+                    try {
+                        return ((string)(this[this.tableTMSWithReason.RM_STATUSColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'RM_STATUS\' in table \'TMSWithReason\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableTMSWithReason.RM_STATUSColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsReasonNull() {
                 return this.IsNull(this.tableTMSWithReason.ReasonColumn);
             }
@@ -685,6 +835,66 @@ namespace Redmine_sync.DataSets {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetRMNull() {
                 this[this.tableTMSWithReason.RMColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsMeNull() {
+                return this.IsNull(this.tableTMSWithReason.MeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetMeNull() {
+                this[this.tableTMSWithReason.MeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsTMS_ASSIGNEDNull() {
+                return this.IsNull(this.tableTMSWithReason.TMS_ASSIGNEDColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetTMS_ASSIGNEDNull() {
+                this[this.tableTMSWithReason.TMS_ASSIGNEDColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsTMS_STATUSNull() {
+                return this.IsNull(this.tableTMSWithReason.TMS_STATUSColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetTMS_STATUSNull() {
+                this[this.tableTMSWithReason.TMS_STATUSColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsRM_ASSIGNEDNull() {
+                return this.IsNull(this.tableTMSWithReason.RM_ASSIGNEDColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetRM_ASSIGNEDNull() {
+                this[this.tableTMSWithReason.RM_ASSIGNEDColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsRM_STATUSNull() {
+                return this.IsNull(this.tableTMSWithReason.RM_STATUSColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetRM_STATUSNull() {
+                this[this.tableTMSWithReason.RM_STATUSColumn] = global::System.Convert.DBNull;
             }
         }
         
