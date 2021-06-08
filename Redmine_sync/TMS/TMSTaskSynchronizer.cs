@@ -307,13 +307,8 @@ namespace Redmine_sync
                         r["TMS_Assigned"] = tp.Item1.AssignedTo;
                         r["TMS_Status"] = tp.Item1.Status;
                     }
-                    
-                    string text = tp.ToString();
-                    //r["Text"] = text;
-
-
-
-                    if (text != null && (text.Contains("WALDEMAR") || text.Contains("waldekd") || text.Contains("Waldemar")))
+              
+                    if (IsAssignedToMe(tp.ToString()))
                     {
                         r["Me"] = "Y";
                     }
@@ -328,14 +323,14 @@ namespace Redmine_sync
                     dt.Rows.Add(r);
                 }
             }
-
-            dt.AcceptChanges();
-            output.WriteToGrid(dt);
-
+            
             output.WriteLine("\r\n-------TMS not exist in RM-------");
             foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(TeamService.UsersTMSLogin))
             {
                 output.WriteLine(item.ToString());
+                DataRow r = dt.NewRow();
+                FillOutputGridRowWithTMSData(item, r, Consts.RFC_NOT_EXISTS_IN_RM);
+                dt.Rows.Add(r);
             }
 
             output.WriteLine("\r\n-------RM duplicated TMS -------");
@@ -356,6 +351,11 @@ namespace Redmine_sync
             foreach (TMSItem item in rmTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(me))
             {
                 output.WriteLine(item.TMS);
+
+                DataRow r = dt.NewRow();
+                FillOutputGridRowWithTMSRMData(item, r, Consts.RFC_ASSIGNED_TO_ME_IN_RM);
+                dt.Rows.Add(r);
+
             }
 
 
@@ -365,10 +365,52 @@ namespace Redmine_sync
             foreach (TMSItem item in dbTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(me))
             {
                 output.WriteLine(item.TMS);
+
+                DataRow r = dt.NewRow();
+                FillOutputGridRowWithTMSData(item, r, Consts.RFC_ASSIGNED_TO_ME_IN_TMS);
+                dt.Rows.Add(r);
             }
 
 
             output.WriteLine("\r\n----------------------------");
+
+            dt.AcceptChanges();
+            output.WriteToGrid(dt);
+
+        }
+
+        private static void FillOutputGridRowWithTMSRMData(TMSItem item, DataRow r, string reason)
+        {
+            r["RM"] = item.RMId;
+            r["RM_Assigned"] = item.AssignedTo;
+            r["RM_Status"] = item.Status;
+
+            r["Reason"] = reason;
+
+            if (IsAssignedToMe(item.AssignedTo))
+            {
+                r["Me"] = "Y";
+            }
+        }
+
+
+        private static void FillOutputGridRowWithTMSData(TMSItem item, DataRow r, string reason)
+        {
+            r["Reason"] = reason;
+            r["TMS"] = item.TMS;
+            r["TMS_Assigned"] = item.AssignedTo;
+            r["TMS_Status"] = item.Status;
+
+            if (IsAssignedToMe(item.AssignedTo))
+            {
+                r["Me"] = "Y";
+            }
+        }
+
+        private static bool IsAssignedToMe(string text)
+        {
+
+            return (text != null && text.Contains("WALDEMAR") || text.Contains("waldekd") || text.Contains("Waldemar"));
         }
 
         private static TMSDictionary GetTMSDataFromRedMine(IOutputable output)

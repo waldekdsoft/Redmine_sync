@@ -1,4 +1,5 @@
-﻿using Redmine.Net.Api.Types;
+﻿using Redmine.Net.Api;
+using Redmine.Net.Api.Types;
 using Redmine_sync.RM2XLS;
 using System;
 using System.Collections.Generic;
@@ -99,6 +100,17 @@ namespace Redmine_sync.GUI
 
             dataGridView1.CellFormatting -= DataGridView1_CellFormatting;
             dataGridView1.CellFormatting += DataGridView1_CellFormatting;
+
+            //default checking 
+            foreach (CheckBox cb in ReasonsForCheckingList)
+            {
+                if (cb != cbBOTH_CLOSED && cb != cbBOTH_OK)
+                {
+                    cb.Checked = true;
+                }
+            }
+
+            
         }
 
         private void DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -128,8 +140,17 @@ namespace Redmine_sync.GUI
                     case "RFC_BOTH_OK":
                         e.Value = "OK";
                         break;
+                    case "RFC_ASSIGNED_TO_ME_IN_RM":
+                        e.Value = "Me in RM";
+                        break;
+                    case "RFC_ASSIGNED_TO_ME_IN_TMS":
+                        e.Value = "Me in TMS";
+                        break;
+//                              public static readonly string RFC_ASSIGNED_TO_ME_IN_RM = "RFC_ASSIGNED_TO_ME_IN_RM";
+//      public static readonly string RFC_ASSIGNED_TO_ME_IN_TMS = "RFC_ASSIGNED_TO_ME_IN_TMS";
+
                 }
-            }
+}
         }
 
         private void TestModeCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -278,15 +299,18 @@ namespace Redmine_sync.GUI
             {
                 string filter = string.Empty;
 
-                foreach (CheckBox cb in ReasonsForCheckingList)
+                if (!cbDISP_ALL.Checked)
                 {
-                    if (cb.Checked)
+                    foreach (CheckBox cb in ReasonsForCheckingList)
                     {
-                        if (!string.IsNullOrWhiteSpace(filter))
+                        if (cb.Checked)
                         {
-                            filter += " OR ";
+                            if (!string.IsNullOrWhiteSpace(filter))
+                            {
+                                filter += " OR ";
+                            }
+                            filter += string.Format("Reason = 'RFC_{0}'", cb.Name.Substring(2));
                         }
-                        filter += string.Format("Reason = 'RFC_{0}'", cb.Name.Substring(2));
                     }
                 }
 
@@ -294,10 +318,39 @@ namespace Redmine_sync.GUI
                 {
                     if (!string.IsNullOrWhiteSpace(filter))
                     {
+                        filter = "(" + filter + ")";
                         filter += " AND ";
                     }
                     filter += "ME = 'Y'";
-
+                }
+                /*
+                if (cbRM_NEW.Checked)
+                {
+                    if (!string.IsNullOrWhiteSpace(filter))
+                    {
+                        filter = "(" + filter + ")";
+                        filter += " AND ";
+                    }
+                    filter += "(RM_STATUS = 'New' OR RM_STATUS = 'In Progress')";
+                }
+                */
+                if (checkedListBox1.CheckedItems.Count > 0)
+                {
+                    string cbListFilter = string.Empty;
+                    foreach (string s in checkedListBox1.CheckedItems)
+                    {
+                        if (!string.IsNullOrWhiteSpace(cbListFilter))
+                        {
+                            cbListFilter += " OR ";
+                        }
+                        cbListFilter += string.Format("RM_STATUS = '{0}'", s);
+                    }
+                    cbListFilter = string.Format(" ({0}) ", cbListFilter);
+                    if (!string.IsNullOrWhiteSpace(filter))
+                    {
+                        filter += " AND ";
+                    }
+                    filter += cbListFilter;
                 }
                 dt.DefaultView.RowFilter = filter;
                 dataGridView1.Refresh();
@@ -346,8 +399,46 @@ namespace Redmine_sync.GUI
                         Process.Start("chrome.exe", finalLnk);
                     }
                 }
+                if (e.ColumnIndex == 8)
+                {
+                    DataGridViewTextBoxCell assignedToCell = dataGridView1.Rows[e.RowIndex].Cells[4] as DataGridViewTextBoxCell;
+                    DataGridViewButtonCell rmIssueNum = dataGridView1.Rows[e.RowIndex].Cells[3] as DataGridViewButtonCell;
+
+                    if (assignedToCell != null && rmIssueNum != null)
+                    {
+                        string assignedInTMS = Convert.ToString(assignedToCell.Value);
+                        string rmId = Convert.ToString(rmIssueNum.Value);
+
+                        if (!string.IsNullOrEmpty(assignedInTMS) && !string.IsNullOrEmpty(rmId))
+                        {
+                            NameValueCollection parameters = new NameValueCollection {
+                            { RedmineKeys.INCLUDE, $"{RedmineKeys.CHANGE_SETS},{RedmineKeys.JOURNALS},{RedmineKeys.NOTES}" } };
+                            Issue rmIssue = RMManegerService.RMManager.GetObject<Issue>(rmId, parameters);
+
+                            
+                            //var newIssue = new Issue { Subject = subject, Project = p, Description = details };
+                            //MManegerService.RMManager.CreateObject(newIssue);
+
+
+                            // fixture.RedmineManager.UpdateObject(UPDATED_ISSUE_ID, issue);
+
+                            switch (assignedInTMS)
+                            {
+                                case "N/GENEBUG":
+                                    break;
+
+                            }
+                        }
+                    }
+                    //string assignedInTMS = dataGridView1.Rows[e.RowIndex].Cells[4]; 
+                }
             }
 
+        }
+
+        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ApplyChosenFilters();
         }
     }
 }

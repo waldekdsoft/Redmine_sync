@@ -20,6 +20,10 @@ namespace Redmine_sync
         public static readonly string RFC_NOT_EXISTS_IN_TMS = "RFC_NOT_EXISTS_IN_TMS";
         public static readonly string RFC_NOT_EXISTS_IN_RM = "RFC_NOT_EXISTS_IN_RM";
         public static readonly string RFC_DIFFERENT_STATUSES = "RFC_DIFFERENT_STATUSES";
+        public static readonly string RFC_ASSIGNED_TO_ME_IN_RM = "RFC_ASSIGNED_TO_ME_IN_RM";
+        public static readonly string RFC_ASSIGNED_TO_ME_IN_TMS = "RFC_ASSIGNED_TO_ME_IN_TMS";
+        public static readonly string RFC_RM_NEW = "RFC_RM_NEW";
+
         public static readonly string RFC_ASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS = "RFC_ASSIGNED_TO_DIFFERENT_PERSON_IN_RM_AND_TMS";
         public static readonly string RFC_NOT_CONNECTED_WITH_TMS = "RFC_NOT_CONNECTED_WITH_TMS";
         public static readonly string RFC_BOTH_CLOSED = "RFC_BOTH_CLOSED";
