@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackExchange.Redis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,21 @@ namespace Redmine_sync
         public string SenderCode { get; set; }
 
         private string desc;
+
+        public HashEntry[] GetRedisHashEntries()
+        {
+            List<HashEntry> heList = new List<HashEntry>();
+
+            heList.Add(new HashEntry("Id", Id));
+            heList.Add(new HashEntry("TMS", TMS));
+            heList.Add(new HashEntry("Status", Status));
+            heList.Add(new HashEntry("Env", Env));
+            heList.Add(new HashEntry("ProblemId", ProblemId));
+            heList.Add(new HashEntry("SenderCode", SenderCode));
+            heList.Add(new HashEntry("Desc", Desc));
+            return heList.ToArray();
+        }
+
         public string Desc {
             get
             {

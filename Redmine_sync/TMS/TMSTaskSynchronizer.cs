@@ -351,10 +351,11 @@ namespace Redmine_sync
             foreach (TMSItem item in rmTMSDict.GetNotClosedNotUsedAssignedToDEV1ItemList(me))
             {
                 output.WriteLine(item.TMS);
-
+                /*
                 DataRow r = dt.NewRow();
                 FillOutputGridRowWithTMSRMData(item, r, Consts.RFC_ASSIGNED_TO_ME_IN_RM);
                 dt.Rows.Add(r);
+                */
 
             }
 

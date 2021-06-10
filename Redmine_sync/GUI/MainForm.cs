@@ -1,11 +1,14 @@
 ﻿using Redmine.Net.Api;
 using Redmine.Net.Api.Types;
 using Redmine_sync.RM2XLS;
+using RestSharp;
+using RestSharp.Authenticators;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Diagnostics;
+using System.Net;
 using System.Windows.Forms;
 
 namespace Redmine_sync.GUI
@@ -17,6 +20,7 @@ namespace Redmine_sync.GUI
         private static string RM_LINK = "http://pcredmine:3000/issues/{0}";
 
         CheckBox testModeCheckBox = null;
+        CheckBox redisStoreCheckBox = null;
 
         public MainForm()
         {
@@ -86,6 +90,14 @@ namespace Redmine_sync.GUI
                 ToolStripControlHost host = new ToolStripControlHost(testModeCheckBox);
                 statusStrip1.Items.Add(host);
             }
+            if (redisStoreCheckBox == null)
+            {
+                redisStoreCheckBox = new CheckBox();
+                redisStoreCheckBox.Text = "Redis store";
+                ToolStripControlHost host = new ToolStripControlHost(redisStoreCheckBox);
+                statusStrip1.Items.Add(host);
+            }
+
 
             testModeCheckBox.CheckedChanged -= TestModeCheckBox_CheckedChanged;
             testModeCheckBox.CheckedChanged += TestModeCheckBox_CheckedChanged;
@@ -219,27 +231,6 @@ namespace Redmine_sync.GUI
             dataGridView1.DataSource = dt;
             dataGridView1.Dock = DockStyle.Fill;
             ApplyChosenFilters();
-
-            /*
-            foreach (DataGridViewRow r in dataGridView1.Rows)
-            {
-                // if (System.Uri.IsWellFormedUriString(r.Cells["Contact"].Value.ToString(), UriKind.Absolute))
-                //{
-                DataGridViewLinkCell c = r.Cells[1] as DataGridViewLinkCell;
-                if (c != null)
-                {
-                    //c.Col
-                    c.Value = "https://www.automatetheplanet.com/getting-started-webdriver/";
-                   // c.UseColumnTextForLinkValue = true;         
-                }
-                //r.Cells["TMS"] = new DataGridViewLinkCell();
-                // Note that if I want a different link colour for example it must go here
-
-                //c.LinkColor = Color.Green;
-                //}
-
-            }*/
-
         }
 
 
@@ -248,27 +239,10 @@ namespace Redmine_sync.GUI
             var dataGridView = sender as DataGridView;
 
             if (dataGridView != null)
-            {
-                /*
-                foreach (DataGridViewRow r in dataGridView1.Rows)
-                {
-                    // if (System.Uri.IsWellFormedUriString(r.Cells["Contact"].Value.ToString(), UriKind.Absolute))
-                    //{
-                    DataGridViewLinkCell c = r.Cells["TMS"] as DataGridViewLinkCell;
-                    //r.Cells["TMS"] = new DataGridViewLinkCell();
-                    // Note that if I want a different link colour for example it must go here
-
-                    //c.LinkColor = Color.Green;
-                    //}
-                }
-                */
+            {             
                 dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
                 dataGridView.Columns[dataGridView.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-
-                
             }
-
-            
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -415,7 +389,11 @@ namespace Redmine_sync.GUI
                             { RedmineKeys.INCLUDE, $"{RedmineKeys.CHANGE_SETS},{RedmineKeys.JOURNALS},{RedmineKeys.NOTES}" } };
                             Issue rmIssue = RMManegerService.RMManager.GetObject<Issue>(rmId, parameters);
 
-                            
+
+                            if (rmIssue != null)
+                            {
+                                
+                            }
                             //var newIssue = new Issue { Subject = subject, Project = p, Description = details };
                             //MManegerService.RMManager.CreateObject(newIssue);
 
@@ -439,6 +417,52 @@ namespace Redmine_sync.GUI
         private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             ApplyChosenFilters();
+        }
+
+        public bool GetIsRedisUse()
+        {
+            return redisStoreCheckBox.Checked;
+        }
+
+        async private void btnTest_Click(object sender, EventArgs e)
+        {
+            /*
+            var cookieJar = new CookieContainer();
+            var client = new RestClient("http://pcredmine:3000");
+            client.AddDefaultQueryParameter("key", "0533a992d0c093b3b1592e57e10281156ea6afde");
+            var request = new RestRequest("issues/7979.xml", Method.PUT);
+            request.AddParameter("Content-Type", "application/xml");
+            request.RequestFormat = DataFormat.Xml;
+
+            string xml = "<?xml version=\"1.0\"?><issue><notes>The subject was changed 111</notes></issue>";
+            */
+            //request.Add
+
+            //request.AddBody(xml);
+
+            //client.Authenticator = new SimpleAuthenticator();
+            //var response = client.Put(request);
+
+            var postUrl = "issues/7979.xml";
+            string rawXml = "<?xml version=\"1.0\"?><issue><notes>The subject was changed 111</notes></issue>";
+
+            var client = new RestClient("http://pcredmine:3000");
+            client.AddDefaultQueryParameter("key", "0533a992d0c093b3b1592e57e10281156ea6afde");
+            IRestRequest request = new RestRequest
+            {
+                Resource = postUrl
+            };
+
+            request.AddHeader("Content-Type", "text/xml");
+            request.AddHeader("Accept", "text/xml");
+            request.AddParameter("text/xml", rawXml, ParameterType.RequestBody);
+
+
+            IRestResponse response = client.Put(request);
+            //IRestResponse response = client.Execu//te(request);
+
+          //  Assert.IsNotNull(response.Data);
+
         }
     }
 }

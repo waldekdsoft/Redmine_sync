@@ -1,5 +1,7 @@
 ﻿using Redmine.Net.Api.Types;
+using Redmine_sync.Cache;
 using Redmine_sync.GUI;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +17,7 @@ namespace Redmine_sync
 
         private static string MOM_FILES_DIR = @"C:\Users\waldekd\Documents\MOMProblems";
         private static string MOM_FILE_PATH = MOM_FILES_DIR + @"\moms.xlsx";
+        private static IDatabase cache = null;
 
         private static Dictionary<string, MOMEnvSettings> MOM_ENV_SETTINGS = new Dictionary<string, MOMEnvSettings>() {
             { "L058@MACBI", new MOMEnvSettings("lxc058.softsystem.pl:7701") },
@@ -67,6 +70,11 @@ namespace Redmine_sync
 
             List<Issue> issuesListFromRemine = CommonTools.GetIssuesFromRedmine(project_id);
 
+            if (output.GetIsRedisUse())
+            {
+                cache = RedisConnectorHelper.Connection.GetDatabase();
+            }
+
             foreach (var issue in issuesListFromRemine.Where(issue => issue.Project.Id == project_id))
             {
                 string subject = issue.Subject;
@@ -94,6 +102,8 @@ namespace Redmine_sync
                         item.SenderCode = subjectSplitted[4].Trim();
                     }
                     issuesInRedmineProject.Add(item);
+
+                    //cache.HashSetAsync("dd", "ddd", "ddd");
                 }
                 else
                 {

@@ -63,6 +63,7 @@ namespace Redmine_sync.GUI
             this.AUTO_ACTION = new System.Windows.Forms.DataGridViewButtonColumn();
             this.tMSWithReasonBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.mainDS = new Redmine_sync.DataSets.MainDS();
+            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.cbDISP_ALL = new System.Windows.Forms.CheckBox();
             this.cbME = new System.Windows.Forms.CheckBox();
             this.cbBOTH_OK = new System.Windows.Forms.CheckBox();
@@ -77,7 +78,7 @@ namespace Redmine_sync.GUI
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
+            this.btnTest = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -102,7 +103,7 @@ namespace Redmine_sync.GUI
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1633, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1633, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -230,7 +231,7 @@ namespace Redmine_sync.GUI
             this.tbMainOutput.Multiline = true;
             this.tbMainOutput.Name = "tbMainOutput";
             this.tbMainOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbMainOutput.Size = new System.Drawing.Size(770, 448);
+            this.tbMainOutput.Size = new System.Drawing.Size(770, 449);
             this.tbMainOutput.TabIndex = 1;
             // 
             // statusStrip1
@@ -252,7 +253,7 @@ namespace Redmine_sync.GUI
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 30);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 28);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -262,6 +263,7 @@ namespace Redmine_sync.GUI
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.btnTest);
             this.splitContainer1.Panel2.Controls.Add(this.checkedListBox1);
             this.splitContainer1.Panel2.Controls.Add(this.cbDISP_ALL);
             this.splitContainer1.Panel2.Controls.Add(this.cbME);
@@ -277,8 +279,8 @@ namespace Redmine_sync.GUI
             this.splitContainer1.Panel2.Controls.Add(this.button3);
             this.splitContainer1.Panel2.Controls.Add(this.button2);
             this.splitContainer1.Panel2.Controls.Add(this.button1);
-            this.splitContainer1.Size = new System.Drawing.Size(1633, 628);
-            this.splitContainer1.SplitterDistance = 448;
+            this.splitContainer1.Size = new System.Drawing.Size(1633, 630);
+            this.splitContainer1.SplitterDistance = 449;
             this.splitContainer1.TabIndex = 3;
             // 
             // splitContainer2
@@ -294,7 +296,7 @@ namespace Redmine_sync.GUI
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tbMainOutput);
-            this.splitContainer2.Size = new System.Drawing.Size(1633, 448);
+            this.splitContainer2.Size = new System.Drawing.Size(1633, 449);
             this.splitContainer2.SplitterDistance = 859;
             this.splitContainer2.TabIndex = 2;
             // 
@@ -318,7 +320,7 @@ namespace Redmine_sync.GUI
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(859, 448);
+            this.dataGridView1.Size = new System.Drawing.Size(859, 449);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dataGridView1.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridView1_DataBindingComplete);
@@ -412,6 +414,24 @@ namespace Redmine_sync.GUI
             // 
             this.mainDS.DataSetName = "MainDS";
             this.mainDS.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // checkedListBox1
+            // 
+            this.checkedListBox1.FormattingEnabled = true;
+            this.checkedListBox1.Items.AddRange(new object[] {
+            "New",
+            "In Progress",
+            "Feedback",
+            "Investigated",
+            "Closed",
+            "Rejected",
+            "Reassigned",
+            "On Hold"});
+            this.checkedListBox1.Location = new System.Drawing.Point(1256, 18);
+            this.checkedListBox1.Name = "checkedListBox1";
+            this.checkedListBox1.Size = new System.Drawing.Size(241, 140);
+            this.checkedListBox1.TabIndex = 16;
+            this.checkedListBox1.SelectedIndexChanged += new System.EventHandler(this.checkedListBox1_SelectedIndexChanged);
             // 
             // cbDISP_ALL
             // 
@@ -563,23 +583,15 @@ namespace Redmine_sync.GUI
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // checkedListBox1
+            // btnTest
             // 
-            this.checkedListBox1.FormattingEnabled = true;
-            this.checkedListBox1.Items.AddRange(new object[] {
-            "New",
-            "In Progress",
-            "Feedback",
-            "Investigated",
-            "Closed",
-            "Rejected",
-            "Reassigned",
-            "On Hold"});
-            this.checkedListBox1.Location = new System.Drawing.Point(1256, 18);
-            this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(241, 140);
-            this.checkedListBox1.TabIndex = 16;
-            this.checkedListBox1.SelectedIndexChanged += new System.EventHandler(this.checkedListBox1_SelectedIndexChanged);
+            this.btnTest.Location = new System.Drawing.Point(507, 134);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(244, 23);
+            this.btnTest.TabIndex = 17;
+            this.btnTest.Text = "TEST";
+            this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             // 
             // MainForm
             // 
@@ -665,5 +677,6 @@ namespace Redmine_sync.GUI
         private System.Windows.Forms.DataGridViewButtonColumn AUTO_ACTION;
         private System.Windows.Forms.CheckBox cbDISP_ALL;
         private System.Windows.Forms.CheckedListBox checkedListBox1;
+        private System.Windows.Forms.Button btnTest;
     }
 }
