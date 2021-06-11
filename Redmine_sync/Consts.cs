@@ -44,6 +44,7 @@ namespace Redmine_sync
             public static string DB_TMS_CACHE = "db_tms_data.xml";
             public static string RM_TMS_CACHE = "rm_tms_data.xml";
             public static string USERS_CACHE = "user_data.xml";
+            public static string TMS_ACTIONS_CACHE = "tms_act__data_{0}-{1}.xml";
         }
 
         public static class PROJECT_NAMES

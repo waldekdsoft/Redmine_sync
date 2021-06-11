@@ -182,10 +182,16 @@ namespace Redmine_sync.GUI
         private void addSampleDataToDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AddRMDataToDatabse();
-        }        
+        }
+
+        private void PrintCurrentTime()
+        {
+            WriteLine(DateTime.Now.ToString("HH:mm") + ": ");
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            PrintCurrentTime();
             AddNewItems();
         }
 
@@ -216,11 +222,13 @@ namespace Redmine_sync.GUI
 
         private void button2_Click(object sender, EventArgs e)
         {
+            PrintCurrentTime();
             ShowSyncInfo();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
+            PrintCurrentTime();
             AddMissingTMSToRM();
         }
 
@@ -234,12 +242,12 @@ namespace Redmine_sync.GUI
         }
 
 
-            private void dataGridView1_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        private void dataGridView1_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
             var dataGridView = sender as DataGridView;
 
             if (dataGridView != null)
-            {             
+            {
                 dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
                 dataGridView.Columns[dataGridView.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
@@ -247,16 +255,15 @@ namespace Redmine_sync.GUI
 
         private void button4_Click(object sender, EventArgs e)
         {
+            PrintCurrentTime();
             AddRMDataToDatabse();
         }
 
-        private void toolStripDropDownButton1_Click(object sender, EventArgs e)
-        {
-
-        }
+    
 
         private void button5_Click(object sender, EventArgs e)
         {
+            PrintCurrentTime();
             TMSTaskSynchronizer tmsTaskSynchronizer = TMSTaskSynchronizer.GetInstance("MACBI", this);
             tmsTaskSynchronizer.ClearCache();
         }
@@ -331,10 +338,6 @@ namespace Redmine_sync.GUI
             }
         }
 
-        private void dataGridView1_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -362,7 +365,32 @@ namespace Redmine_sync.GUI
                     }
                 }
                 else
-                    if (e.ColumnIndex == 3)
+                if (e.ColumnIndex == 3) /* TMS ACTION HIST */
+                {
+                    DataGridViewButtonCell tmsTaskCell = dataGridView1.Rows[e.RowIndex].Cells[2] as DataGridViewButtonCell;
+                    string tms = Convert.ToString(tmsTaskCell.Value);
+
+                    if (!string.IsNullOrEmpty(tms))
+                    {
+                        string[] tmsTab = tms.Split('-');
+                        if (tmsTab.Length == 2)
+                        {
+                            string client = tmsTab[0];
+                            string numb = tmsTab[1];
+
+                            TMSTaskSynchronizer tmsTaskSynchronizer = TMSTaskSynchronizer.GetInstance(client, this);
+                            DataTable tmsActions = tmsTaskSynchronizer.GetActionsForTMS(numb);
+
+                            TMSActionsForm form = new TMSActionsForm();
+                            form.WriteToGrid(tmsActions);
+                            form.ShowDialog();
+
+                        }
+                    }
+
+                }
+                else
+                    if (e.ColumnIndex == 4) /* RM LINK*/
                 {
                     string rmId = Convert.ToString(cell.Value);
 
@@ -373,6 +401,11 @@ namespace Redmine_sync.GUI
                         Process.Start("chrome.exe", finalLnk);
                     }
                 }
+                else
+                if (e.ColumnIndex == 5) /* RM ACTION HIST */
+                { }
+
+                else
                 if (e.ColumnIndex == 8)
                 {
                     DataGridViewTextBoxCell assignedToCell = dataGridView1.Rows[e.RowIndex].Cells[4] as DataGridViewTextBoxCell;
@@ -426,6 +459,12 @@ namespace Redmine_sync.GUI
 
         async private void btnTest_Click(object sender, EventArgs e)
         {
+            TMSTaskSynchronizer tmsTaskSynchronizer = TMSTaskSynchronizer.GetInstance("MACBI", this);
+            tmsTaskSynchronizer.GetActionsForTMS("02866");
+
+
+            //PrintCurrentTime();
+            //WriteLine(DateTime.Now.ToString("HH:mm"));
             /*
             var cookieJar = new CookieContainer();
             var client = new RestClient("http://pcredmine:3000");
@@ -443,26 +482,89 @@ namespace Redmine_sync.GUI
             //client.Authenticator = new SimpleAuthenticator();
             //var response = client.Put(request);
 
-            var postUrl = "issues/7979.xml";
-            string rawXml = "<?xml version=\"1.0\"?><issue><notes>The subject was changed 111</notes></issue>";
+            //var postUrl = "issues/7979.xml";
+            //string rawXml = "<?xml version=\"1.0\"?><issue><notes>The subject was changed 111</notes></issue>";
 
-            var client = new RestClient("http://pcredmine:3000");
-            client.AddDefaultQueryParameter("key", "0533a992d0c093b3b1592e57e10281156ea6afde");
-            IRestRequest request = new RestRequest
-            {
-                Resource = postUrl
-            };
+            //var client = new RestClient("http://pcredmine:3000");
+            //client.AddDefaultQueryParameter("key", "0533a992d0c093b3b1592e57e10281156ea6afde");
+            //IRestRequest request = new RestRequest
+            //{
+            //    Resource = postUrl
+            //};
 
-            request.AddHeader("Content-Type", "text/xml");
-            request.AddHeader("Accept", "text/xml");
-            request.AddParameter("text/xml", rawXml, ParameterType.RequestBody);
+            //request.AddHeader("Content-Type", "text/xml");
+            //request.AddHeader("Accept", "text/xml");
+            //request.AddParameter("text/xml", rawXml, ParameterType.RequestBody);
 
 
-            IRestResponse response = client.Put(request);
+            //IRestResponse response = client.Put(request);
             //IRestResponse response = client.Execu//te(request);
 
-          //  Assert.IsNotNull(response.Data);
-
+            //  Assert.IsNotNull(response.Data);
+            /*
+            Dictionary<string, string> valuesToUpdate = new Dictionary<string, string>();
+            valuesToUpdate.Add("notes", "some sample note");
+            valuesToUpdate.Add("assigned_to_id", "549");
+            UpdateRMTicket("8356", valuesToUpdate);
+            */
         }
+
+        /*
+            project_id
+            tracker_id
+            status_id
+            priority_id
+            subject
+            description
+            category_id
+            fixed_version_id - ID of the Target Versions (previously called 'Fixed Version' and still referred to as such in the API)
+            assigned_to_id - ID of the user to assign the issue to (currently no mechanism to assign by name)
+            parent_issue_id - ID of the parent issue
+            custom_fields - See Custom fields
+            watcher_user_ids - Array of user ids to add as watchers (since 2.3.0)
+            is_private - Use true or false to indicate whether the issue is private or not
+            estimated_hours - Number of hours estimated for issue
+            notes - Comments about the update
+            private_notes - true if notes are private
+         */
+        private bool UpdateRMTicket(string rmTicketId, Dictionary<string, string> valuesToUpdate)
+        {
+            if (valuesToUpdate.Count > 0)
+            {
+                string xmlBegin = "<?xml version=\"1.0\"?><issue>";
+                string xmlEnd = "</issue>";
+
+                var postUrl = string.Format("issues/{0}.xml", rmTicketId);
+                string rawXml = string.Empty;
+
+                foreach (string key in valuesToUpdate.Keys)
+                {
+                    rawXml += string.Format("<{0}>{1}</{0}>", key, valuesToUpdate[key], key);
+                }
+
+                rawXml = xmlBegin + rawXml + xmlEnd;
+
+                var client = new RestClient("http://pcredmine:3000");
+                client.AddDefaultQueryParameter("key", "0533a992d0c093b3b1592e57e10281156ea6afde");
+                IRestRequest request = new RestRequest
+                {
+                    Resource = postUrl
+                };
+
+                request.AddHeader("Content-Type", "text/xml");
+                request.AddHeader("Accept", "text/xml");
+                request.AddParameter("text/xml", rawXml, ParameterType.RequestBody);
+
+
+                IRestResponse response = client.Put(request);
+
+
+                Write("UpdateRMTicket: Status: {0} Description {1}", response.ResponseStatus, response.StatusDescription);
+                return response.ResponseStatus == ResponseStatus.Completed;
+            }
+            Write("UpdateRMTicket: No values provided!");
+            return false;
+        }
+
     }
 }

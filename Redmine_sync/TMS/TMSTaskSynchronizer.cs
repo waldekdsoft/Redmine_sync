@@ -307,7 +307,10 @@ namespace Redmine_sync
                         r["TMS_Assigned"] = tp.Item1.AssignedTo;
                         r["TMS_Status"] = tp.Item1.Status;
                     }
-              
+
+                    r["TMS_ACT_SHOW"] = "X";
+                    r["RM_ACT_SHOW"] = "X";
+
                     if (IsAssignedToMe(tp.ToString()))
                     {
                         r["Me"] = "Y";
@@ -488,6 +491,31 @@ namespace Redmine_sync
         //    sw.StopStopwatchAndPrintDoneMessageWithElapsedTime();
         //    return redMineTMSList;
         //}
+
+        public DataTable GetActionsForTMS(string number)
+        {
+            DataTable tmsActions = new DataTable();
+            string cacheFileName = string.Format(Consts.FILE_NAMES.TMS_ACTIONS_CACHE, client,number);
+
+            if (!Consts.TEST_MODE)
+            {
+                sw.StartStopwatchAndPrintMessage("Getting TMS actions and making cache...", output);
+                //Task<DataTable> execureQueryTask = DBService.ExecuteQueryAsync(DBService.GET_ALL_TMS_TASKS);
+                tmsActions = DBService.ExecuteQuery(String.Format(DBService.GET_ACTIONS_FOR_TMS, client, number));
+                tmsActions.TableName = "TMS_ACTIONS";
+                tmsActions.WriteXml(cacheFileName);
+            }
+            else
+            {
+                sw.StartStopwatchAndPrintMessage("Getting TMS actions from cache...", output);
+                DataSet ds = new DataSet();
+                ds.ReadXml(cacheFileName, XmlReadMode.InferSchema);
+                tmsActions = ds.Tables[0];
+            }
+            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime(output);
+
+            return tmsActions;
+        }
 
         private TMSDictionary GetTMSDataFromDB()
         {

@@ -12,7 +12,7 @@
   <xs:element name="MainDS" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="MainDS" msprop:Generator_UserDSName="MainDS">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="TMSWithReason" msprop:Generator_TableClassName="TMSWithReasonDataTable" msprop:Generator_TableVarName="tableTMSWithReason" msprop:Generator_TablePropName="TMSWithReason" msprop:Generator_RowDeletingName="TMSWithReasonRowDeleting" msprop:Generator_RowChangingName="TMSWithReasonRowChanging" msprop:Generator_RowEvHandlerName="TMSWithReasonRowChangeEventHandler" msprop:Generator_RowDeletedName="TMSWithReasonRowDeleted" msprop:Generator_UserTableName="TMSWithReason" msprop:Generator_RowChangedName="TMSWithReasonRowChanged" msprop:Generator_RowEvArgName="TMSWithReasonRowChangeEvent" msprop:Generator_RowClassName="TMSWithReasonRow">
+        <xs:element name="TMSWithReason" msprop:Generator_TableClassName="TMSWithReasonDataTable" msprop:Generator_TableVarName="tableTMSWithReason" msprop:Generator_RowChangedName="TMSWithReasonRowChanged" msprop:Generator_TablePropName="TMSWithReason" msprop:Generator_RowDeletingName="TMSWithReasonRowDeleting" msprop:Generator_RowChangingName="TMSWithReasonRowChanging" msprop:Generator_RowEvHandlerName="TMSWithReasonRowChangeEventHandler" msprop:Generator_RowDeletedName="TMSWithReasonRowDeleted" msprop:Generator_RowClassName="TMSWithReasonRow" msprop:Generator_UserTableName="TMSWithReason" msprop:Generator_RowEvArgName="TMSWithReasonRowChangeEvent">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Reason" msprop:Generator_ColumnVarNameInTable="columnReason" msprop:Generator_ColumnPropNameInRow="Reason" msprop:Generator_ColumnPropNameInTable="ReasonColumn" msprop:Generator_UserColumnName="Reason" type="xs:string" minOccurs="0" />
@@ -24,6 +24,8 @@
               <xs:element name="TMS_STATUS" msprop:Generator_ColumnVarNameInTable="columnTMS_STATUS" msprop:Generator_ColumnPropNameInRow="TMS_STATUS" msprop:Generator_ColumnPropNameInTable="TMS_STATUSColumn" msprop:Generator_UserColumnName="TMS_STATUS" type="xs:string" minOccurs="0" />
               <xs:element name="RM_ASSIGNED" msprop:Generator_ColumnVarNameInTable="columnRM_ASSIGNED" msprop:Generator_ColumnPropNameInRow="RM_ASSIGNED" msprop:Generator_ColumnPropNameInTable="RM_ASSIGNEDColumn" msprop:Generator_UserColumnName="RM_ASSIGNED" type="xs:string" minOccurs="0" />
               <xs:element name="RM_STATUS" msprop:Generator_ColumnVarNameInTable="columnRM_STATUS" msprop:Generator_ColumnPropNameInRow="RM_STATUS" msprop:Generator_ColumnPropNameInTable="RM_STATUSColumn" msprop:Generator_UserColumnName="RM_STATUS" type="xs:string" minOccurs="0" />
+              <xs:element name="TMS_ACT_SHOW" msprop:Generator_ColumnVarNameInTable="columnTMS_ACT_SHOW" msprop:Generator_ColumnPropNameInRow="TMS_ACT_SHOW" msprop:Generator_ColumnPropNameInTable="TMS_ACT_SHOWColumn" msprop:Generator_UserColumnName="TMS_ACT_SHOW" type="xs:string" minOccurs="0" />
+              <xs:element name="RM_ACT_SHOW" msprop:Generator_ColumnVarNameInTable="columnRM_ACT_SHOW" msprop:Generator_ColumnPropNameInRow="RM_ACT_SHOW" msprop:Generator_ColumnPropNameInTable="RM_ACT_SHOWColumn" msprop:Generator_UserColumnName="RM_ACT_SHOW" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

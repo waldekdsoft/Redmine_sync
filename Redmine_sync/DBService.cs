@@ -14,6 +14,8 @@ namespace Redmine_sync
         public static string GET_ALL_TMS_TASKS = "SELECT * FROM MACBI_TMS_ADDITIONAL_INFO";
         public static string GET_ALL_DEV1_USERS = "SELECT * FROM DEV1_MEMBERS_VIEW";
 
+        public static string GET_ACTIONS_FOR_TMS = "SELECT* FROM TABLE(GET_ACTIONS_FOR_MACBI_TMS('{0}','{1}'))";
+
         public static string DELETE_RM2XSLTABLE_CONTENT_FROM_TODAY = "delete from RM2XSLTABLE where TO_DATE(update_dt, 'yyyy/mm/dd') = TO_DATE(sysdate, 'yyyy/mm/dd')";
         public static string INSERT_RM2XSLTABLE_RECORD = "insert into RM2XSLTABLE(rm_iss_num, rm_prj_name, rm_tracker, rm_status, rm_priority, rm_subject, rm_assignee, rm_updated, rm_tms_urgency, tms_task, update_dt) values(:rm_iss_num, :rm_prj_name, :rm_tracker, :rm_status, :rm_priority, :rm_subject, :rm_assignee, :rm_updated, :rm_tms_urgency, :tms_task, sysdate)";
         static DBService()

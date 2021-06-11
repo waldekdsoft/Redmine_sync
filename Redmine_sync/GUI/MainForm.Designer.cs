@@ -52,17 +52,9 @@ namespace Redmine_sync.GUI
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.reasonDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.chDataGridViewCheckBoxColumnMe = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.tMSDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.RM = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.TMS_ASSIGNED = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TMS_STATUS = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.RM_ASSIGNED = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.RM_STATUS = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.AUTO_ACTION = new System.Windows.Forms.DataGridViewButtonColumn();
             this.tMSWithReasonBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.mainDS = new Redmine_sync.DataSets.MainDS();
+            this.btnTest = new System.Windows.Forms.Button();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.cbDISP_ALL = new System.Windows.Forms.CheckBox();
             this.cbME = new System.Windows.Forms.CheckBox();
@@ -78,7 +70,17 @@ namespace Redmine_sync.GUI
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.btnTest = new System.Windows.Forms.Button();
+            this.reasonDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.chDataGridViewCheckBoxColumnMe = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.tMSDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.TMS_ACT_HIST = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.RM = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.RM_ACT_HIST = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.TMS_ASSIGNED = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TMS_STATUS = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RM_ASSIGNED = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RM_STATUS = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.AUTO_ACTION = new System.Windows.Forms.DataGridViewButtonColumn();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -103,7 +105,7 @@ namespace Redmine_sync.GUI
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1633, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(2054, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -231,7 +233,7 @@ namespace Redmine_sync.GUI
             this.tbMainOutput.Multiline = true;
             this.tbMainOutput.Name = "tbMainOutput";
             this.tbMainOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbMainOutput.Size = new System.Drawing.Size(770, 449);
+            this.tbMainOutput.Size = new System.Drawing.Size(970, 449);
             this.tbMainOutput.TabIndex = 1;
             // 
             // statusStrip1
@@ -241,7 +243,7 @@ namespace Redmine_sync.GUI
             this.tsStatusLabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 658);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1633, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(2054, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -279,7 +281,7 @@ namespace Redmine_sync.GUI
             this.splitContainer1.Panel2.Controls.Add(this.button3);
             this.splitContainer1.Panel2.Controls.Add(this.button2);
             this.splitContainer1.Panel2.Controls.Add(this.button1);
-            this.splitContainer1.Size = new System.Drawing.Size(1633, 630);
+            this.splitContainer1.Size = new System.Drawing.Size(2054, 630);
             this.splitContainer1.SplitterDistance = 449;
             this.splitContainer1.TabIndex = 3;
             // 
@@ -296,8 +298,8 @@ namespace Redmine_sync.GUI
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tbMainOutput);
-            this.splitContainer2.Size = new System.Drawing.Size(1633, 449);
-            this.splitContainer2.SplitterDistance = 859;
+            this.splitContainer2.Size = new System.Drawing.Size(2054, 449);
+            this.splitContainer2.SplitterDistance = 1080;
             this.splitContainer2.TabIndex = 2;
             // 
             // dataGridView1
@@ -308,7 +310,9 @@ namespace Redmine_sync.GUI
             this.reasonDataGridViewTextBoxColumn,
             this.chDataGridViewCheckBoxColumnMe,
             this.tMSDataGridViewTextBoxColumn,
+            this.TMS_ACT_HIST,
             this.RM,
+            this.RM_ACT_HIST,
             this.TMS_ASSIGNED,
             this.TMS_STATUS,
             this.RM_ASSIGNED,
@@ -320,90 +324,10 @@ namespace Redmine_sync.GUI
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(859, 449);
+            this.dataGridView1.Size = new System.Drawing.Size(1080, 449);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dataGridView1.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridView1_DataBindingComplete);
-            // 
-            // reasonDataGridViewTextBoxColumn
-            // 
-            this.reasonDataGridViewTextBoxColumn.DataPropertyName = "Reason";
-            this.reasonDataGridViewTextBoxColumn.HeaderText = "Reason";
-            this.reasonDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.reasonDataGridViewTextBoxColumn.Name = "reasonDataGridViewTextBoxColumn";
-            this.reasonDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.reasonDataGridViewTextBoxColumn.Width = 125;
-            // 
-            // chDataGridViewCheckBoxColumnMe
-            // 
-            this.chDataGridViewCheckBoxColumnMe.DataPropertyName = "Me";
-            this.chDataGridViewCheckBoxColumnMe.FalseValue = "N";
-            this.chDataGridViewCheckBoxColumnMe.HeaderText = "ME";
-            this.chDataGridViewCheckBoxColumnMe.MinimumWidth = 6;
-            this.chDataGridViewCheckBoxColumnMe.Name = "chDataGridViewCheckBoxColumnMe";
-            this.chDataGridViewCheckBoxColumnMe.TrueValue = "Y";
-            this.chDataGridViewCheckBoxColumnMe.Width = 125;
-            // 
-            // tMSDataGridViewTextBoxColumn
-            // 
-            this.tMSDataGridViewTextBoxColumn.DataPropertyName = "TMS";
-            this.tMSDataGridViewTextBoxColumn.HeaderText = "TMS Link";
-            this.tMSDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.tMSDataGridViewTextBoxColumn.Name = "tMSDataGridViewTextBoxColumn";
-            this.tMSDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.tMSDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.tMSDataGridViewTextBoxColumn.Width = 125;
-            // 
-            // RM
-            // 
-            this.RM.DataPropertyName = "RM";
-            this.RM.HeaderText = "RM Link";
-            this.RM.MinimumWidth = 6;
-            this.RM.Name = "RM";
-            this.RM.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.RM.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.RM.Width = 125;
-            // 
-            // TMS_ASSIGNED
-            // 
-            this.TMS_ASSIGNED.DataPropertyName = "TMS_ASSIGNED";
-            this.TMS_ASSIGNED.HeaderText = "TMS Assigned To";
-            this.TMS_ASSIGNED.MinimumWidth = 6;
-            this.TMS_ASSIGNED.Name = "TMS_ASSIGNED";
-            this.TMS_ASSIGNED.Width = 125;
-            // 
-            // TMS_STATUS
-            // 
-            this.TMS_STATUS.DataPropertyName = "TMS_STATUS";
-            this.TMS_STATUS.HeaderText = "TMS Status";
-            this.TMS_STATUS.MinimumWidth = 6;
-            this.TMS_STATUS.Name = "TMS_STATUS";
-            this.TMS_STATUS.Width = 125;
-            // 
-            // RM_ASSIGNED
-            // 
-            this.RM_ASSIGNED.DataPropertyName = "RM_ASSIGNED";
-            this.RM_ASSIGNED.HeaderText = "RM Assigned To";
-            this.RM_ASSIGNED.MinimumWidth = 6;
-            this.RM_ASSIGNED.Name = "RM_ASSIGNED";
-            this.RM_ASSIGNED.Width = 125;
-            // 
-            // RM_STATUS
-            // 
-            this.RM_STATUS.DataPropertyName = "RM_STATUS";
-            this.RM_STATUS.HeaderText = "RM Status";
-            this.RM_STATUS.MinimumWidth = 6;
-            this.RM_STATUS.Name = "RM_STATUS";
-            this.RM_STATUS.Width = 125;
-            // 
-            // AUTO_ACTION
-            // 
-            this.AUTO_ACTION.HeaderText = "Auto action";
-            this.AUTO_ACTION.MinimumWidth = 6;
-            this.AUTO_ACTION.Name = "AUTO_ACTION";
-            this.AUTO_ACTION.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.AUTO_ACTION.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.AUTO_ACTION.Width = 125;
             // 
             // tMSWithReasonBindingSource
             // 
@@ -414,6 +338,16 @@ namespace Redmine_sync.GUI
             // 
             this.mainDS.DataSetName = "MainDS";
             this.mainDS.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // btnTest
+            // 
+            this.btnTest.Location = new System.Drawing.Point(507, 134);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(244, 23);
+            this.btnTest.TabIndex = 17;
+            this.btnTest.Text = "TEST";
+            this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             // 
             // checkedListBox1
             // 
@@ -583,21 +517,108 @@ namespace Redmine_sync.GUI
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // btnTest
+            // reasonDataGridViewTextBoxColumn
             // 
-            this.btnTest.Location = new System.Drawing.Point(507, 134);
-            this.btnTest.Name = "btnTest";
-            this.btnTest.Size = new System.Drawing.Size(244, 23);
-            this.btnTest.TabIndex = 17;
-            this.btnTest.Text = "TEST";
-            this.btnTest.UseVisualStyleBackColor = true;
-            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            this.reasonDataGridViewTextBoxColumn.DataPropertyName = "Reason";
+            this.reasonDataGridViewTextBoxColumn.HeaderText = "Reason";
+            this.reasonDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.reasonDataGridViewTextBoxColumn.Name = "reasonDataGridViewTextBoxColumn";
+            this.reasonDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.reasonDataGridViewTextBoxColumn.Width = 125;
+            // 
+            // chDataGridViewCheckBoxColumnMe
+            // 
+            this.chDataGridViewCheckBoxColumnMe.DataPropertyName = "Me";
+            this.chDataGridViewCheckBoxColumnMe.FalseValue = "N";
+            this.chDataGridViewCheckBoxColumnMe.HeaderText = "ME";
+            this.chDataGridViewCheckBoxColumnMe.MinimumWidth = 6;
+            this.chDataGridViewCheckBoxColumnMe.Name = "chDataGridViewCheckBoxColumnMe";
+            this.chDataGridViewCheckBoxColumnMe.TrueValue = "Y";
+            this.chDataGridViewCheckBoxColumnMe.Width = 125;
+            // 
+            // tMSDataGridViewTextBoxColumn
+            // 
+            this.tMSDataGridViewTextBoxColumn.DataPropertyName = "TMS";
+            this.tMSDataGridViewTextBoxColumn.HeaderText = "TMS Link";
+            this.tMSDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.tMSDataGridViewTextBoxColumn.Name = "tMSDataGridViewTextBoxColumn";
+            this.tMSDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.tMSDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.tMSDataGridViewTextBoxColumn.Width = 125;
+            // 
+            // TMS_ACT_HIST
+            // 
+            this.TMS_ACT_HIST.DataPropertyName = "TMS_ACT_SHOW";
+            this.TMS_ACT_HIST.HeaderText = "TMS_ACT";
+            this.TMS_ACT_HIST.MinimumWidth = 6;
+            this.TMS_ACT_HIST.Name = "TMS_ACT_HIST";
+            this.TMS_ACT_HIST.Text = "Show...";
+            this.TMS_ACT_HIST.Width = 125;
+            // 
+            // RM
+            // 
+            this.RM.DataPropertyName = "RM";
+            this.RM.HeaderText = "RM Link";
+            this.RM.MinimumWidth = 6;
+            this.RM.Name = "RM";
+            this.RM.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.RM.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.RM.Width = 125;
+            // 
+            // RM_ACT_HIST
+            // 
+            this.RM_ACT_HIST.DataPropertyName = "RM_ACT_SHOW";
+            this.RM_ACT_HIST.HeaderText = "RM_ACT";
+            this.RM_ACT_HIST.MinimumWidth = 6;
+            this.RM_ACT_HIST.Name = "RM_ACT_HIST";
+            this.RM_ACT_HIST.Width = 125;
+            // 
+            // TMS_ASSIGNED
+            // 
+            this.TMS_ASSIGNED.DataPropertyName = "TMS_ASSIGNED";
+            this.TMS_ASSIGNED.HeaderText = "TMS Assigned To";
+            this.TMS_ASSIGNED.MinimumWidth = 6;
+            this.TMS_ASSIGNED.Name = "TMS_ASSIGNED";
+            this.TMS_ASSIGNED.Width = 125;
+            // 
+            // TMS_STATUS
+            // 
+            this.TMS_STATUS.DataPropertyName = "TMS_STATUS";
+            this.TMS_STATUS.HeaderText = "TMS Status";
+            this.TMS_STATUS.MinimumWidth = 6;
+            this.TMS_STATUS.Name = "TMS_STATUS";
+            this.TMS_STATUS.Width = 125;
+            // 
+            // RM_ASSIGNED
+            // 
+            this.RM_ASSIGNED.DataPropertyName = "RM_ASSIGNED";
+            this.RM_ASSIGNED.HeaderText = "RM Assigned To";
+            this.RM_ASSIGNED.MinimumWidth = 6;
+            this.RM_ASSIGNED.Name = "RM_ASSIGNED";
+            this.RM_ASSIGNED.Width = 125;
+            // 
+            // RM_STATUS
+            // 
+            this.RM_STATUS.DataPropertyName = "RM_STATUS";
+            this.RM_STATUS.HeaderText = "RM Status";
+            this.RM_STATUS.MinimumWidth = 6;
+            this.RM_STATUS.Name = "RM_STATUS";
+            this.RM_STATUS.Width = 125;
+            // 
+            // AUTO_ACTION
+            // 
+            this.AUTO_ACTION.HeaderText = "Auto action";
+            this.AUTO_ACTION.MinimumWidth = 6;
+            this.AUTO_ACTION.Name = "AUTO_ACTION";
+            this.AUTO_ACTION.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.AUTO_ACTION.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.AUTO_ACTION.Width = 125;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1633, 680);
+            this.ClientSize = new System.Drawing.Size(2054, 680);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -666,17 +687,19 @@ namespace Redmine_sync.GUI
         private System.Windows.Forms.CheckBox cbBOTH_CLOSED;
         private System.Windows.Forms.CheckBox cbNOT_CONNECTED_WITH_TMS;
         private System.Windows.Forms.CheckBox cbME;
+        private System.Windows.Forms.CheckBox cbDISP_ALL;
+        private System.Windows.Forms.CheckedListBox checkedListBox1;
+        private System.Windows.Forms.Button btnTest;
         private System.Windows.Forms.DataGridViewTextBoxColumn reasonDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewCheckBoxColumn chDataGridViewCheckBoxColumnMe;
         private System.Windows.Forms.DataGridViewButtonColumn tMSDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewButtonColumn TMS_ACT_HIST;
         private System.Windows.Forms.DataGridViewButtonColumn RM;
+        private System.Windows.Forms.DataGridViewButtonColumn RM_ACT_HIST;
         private System.Windows.Forms.DataGridViewTextBoxColumn TMS_ASSIGNED;
         private System.Windows.Forms.DataGridViewTextBoxColumn TMS_STATUS;
         private System.Windows.Forms.DataGridViewTextBoxColumn RM_ASSIGNED;
         private System.Windows.Forms.DataGridViewTextBoxColumn RM_STATUS;
         private System.Windows.Forms.DataGridViewButtonColumn AUTO_ACTION;
-        private System.Windows.Forms.CheckBox cbDISP_ALL;
-        private System.Windows.Forms.CheckedListBox checkedListBox1;
-        private System.Windows.Forms.Button btnTest;
     }
 }
