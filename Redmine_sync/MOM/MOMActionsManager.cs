@@ -32,7 +32,11 @@ namespace Redmine_sync
             { "Q507@FCS", new MOMEnvSettings("wp507.softsystem.pl:7700") },
             { "Q26@Generic", new MOMEnvSettings("wp26.softsystem.pl:7700") },
             { "Q336@MACBI", new MOMEnvSettings("wp336.softsystem.pl:7700") },
-            { "Q508@AON", new MOMEnvSettings("wp508.softsystem.pl:7700") },            
+            { "Q508@AON", new MOMEnvSettings("wp508.softsystem.pl:7700") },
+            { "L071@VIBRA", new MOMEnvSettings("lxc071.softsystem.pl:7701") } ,
+            { "L081@SCPMG", new MOMEnvSettings("lxc081.softsystem.pl:8265") } ,
+            { "Q16@MAYO", new MOMEnvSettings("wp16.softsystem.pl:7700") } ,
+            { "Q448@Generic", new MOMEnvSettings("wp448.softsystem.pl:7700") } ,            
             { "L014@MACBI", new MOMEnvSettings("lxc014.softsystem.pl:8425") }
         };
 
@@ -45,7 +49,7 @@ namespace Redmine_sync
         {
             List<StatItem> statItems = new List<StatItem>();
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
-            List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
+            List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();            
 
             CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
             UpdateBasedOnExcelFile(issuesInRedmineProject, statItems, allWithinDirectory);
@@ -54,7 +58,6 @@ namespace Redmine_sync
 
         public static void BuildFinalStats()
         {
-            List<StatItem> statItems = new List<StatItem>();
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
             CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
@@ -158,13 +161,14 @@ namespace Redmine_sync
             List<StatItem> statItems = new List<StatItem>();
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
+            List<string> envsNotExistingInConfigs = new List<string>();
 
             CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
-            ProcessExcelFile(issuesInRedmineProject, statItems);
-            ShowStats(statItems, true);
+            ProcessExcelFile(issuesInRedmineProject, statItems, envsNotExistingInConfigs);
+            ShowStats(statItems, true, envsNotExistingInConfigs);
         }
 
-        private static void ProcessExcelFile(List<IssueItem> issuesInRedmineProject, List<StatItem> statItems)
+        private static void ProcessExcelFile(List<IssueItem> issuesInRedmineProject, List<StatItem> statItems, List<string> envsNotExistingInConfigs)
         {
             //********************************************************************************************************/
             //read data from Excel
@@ -180,6 +184,7 @@ namespace Redmine_sync
                 if (!MOM_ENV_SETTINGS.TryGetValue(tabName, out momEnvSettings))
                 {
                     output.WriteLine("No MOMEnvSettings for {0}", tabName);
+                    envsNotExistingInConfigs.Add(tabName);
                     //output.ReadKey();
                 }
                 else
@@ -237,7 +242,7 @@ namespace Redmine_sync
             }
         }
 
-        private static void ShowStats(List<StatItem> statItems, bool added)
+        private static void ShowStats(List<StatItem> statItems, bool added, List<string> envsNotExistingInConfigs = null)
         {
             output.WriteLine("--------------------------------------------");
             //show stats
@@ -253,6 +258,15 @@ namespace Redmine_sync
                 }
             }
             output.WriteLine("--------------------------------------------");
+            if (envsNotExistingInConfigs != null && envsNotExistingInConfigs.Count > 0)
+            {
+                output.WriteLine("No configuration for environments:");
+
+                foreach (string envName in envsNotExistingInConfigs)
+                {
+                    output.WriteLine(envName);
+                }
+            }
         }
 
         private static void UpdateBasedOnExcelFile(List<IssueItem> issuesInRedmineProject,
