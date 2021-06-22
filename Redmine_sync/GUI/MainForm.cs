@@ -207,6 +207,7 @@ namespace Redmine_sync.GUI
         {
             TMSTaskSynchronizer tmsTaskSynchronizer = TMSTaskSynchronizer.GetInstance("MACBI", this);
             tmsTaskSynchronizer.AddMissingTMSTasksToRedmine();
+            ShowSyncInfo();
         }
 
         private void AddNewItems()
@@ -304,6 +305,8 @@ namespace Redmine_sync.GUI
                     }
                     filter += "ME = 'Y'";
                 }
+
+                
                 /*
                 if (cbRM_NEW.Checked)
                 {
@@ -324,11 +327,20 @@ namespace Redmine_sync.GUI
                         {
                             cbListFilter += " OR ";
                         }
-                        cbListFilter += string.Format("RM_STATUS = '{0}'", s);
+
+                        if (s == "<empty>")
+                        {
+                            cbListFilter += "RM_STATUS IS NULL";
+                        }
+                        else
+                        {
+                            cbListFilter += string.Format("RM_STATUS = '{0}'", s);
+                        }
                     }
                     cbListFilter = string.Format(" ({0}) ", cbListFilter);
                     if (!string.IsNullOrWhiteSpace(filter))
                     {
+                        filter = string.Format(" ({0}) ", filter);
                         filter += " AND ";
                     }
                     filter += cbListFilter;
