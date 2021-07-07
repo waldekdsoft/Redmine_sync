@@ -81,6 +81,8 @@ namespace Redmine_sync.GUI
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.btnSelectAll = new System.Windows.Forms.Button();
+            this.btnClearAll = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -233,7 +235,7 @@ namespace Redmine_sync.GUI
             this.tbMainOutput.Multiline = true;
             this.tbMainOutput.Name = "tbMainOutput";
             this.tbMainOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbMainOutput.Size = new System.Drawing.Size(970, 449);
+            this.tbMainOutput.Size = new System.Drawing.Size(970, 510);
             this.tbMainOutput.TabIndex = 1;
             // 
             // statusStrip1
@@ -241,7 +243,7 @@ namespace Redmine_sync.GUI
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsStatusLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 658);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 744);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(2054, 22);
             this.statusStrip1.TabIndex = 2;
@@ -265,6 +267,8 @@ namespace Redmine_sync.GUI
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.btnClearAll);
+            this.splitContainer1.Panel2.Controls.Add(this.btnSelectAll);
             this.splitContainer1.Panel2.Controls.Add(this.btnTest);
             this.splitContainer1.Panel2.Controls.Add(this.checkedListBox1);
             this.splitContainer1.Panel2.Controls.Add(this.cbDISP_ALL);
@@ -281,8 +285,8 @@ namespace Redmine_sync.GUI
             this.splitContainer1.Panel2.Controls.Add(this.button3);
             this.splitContainer1.Panel2.Controls.Add(this.button2);
             this.splitContainer1.Panel2.Controls.Add(this.button1);
-            this.splitContainer1.Size = new System.Drawing.Size(2054, 630);
-            this.splitContainer1.SplitterDistance = 449;
+            this.splitContainer1.Size = new System.Drawing.Size(2054, 716);
+            this.splitContainer1.SplitterDistance = 510;
             this.splitContainer1.TabIndex = 3;
             // 
             // splitContainer2
@@ -298,7 +302,7 @@ namespace Redmine_sync.GUI
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tbMainOutput);
-            this.splitContainer2.Size = new System.Drawing.Size(2054, 449);
+            this.splitContainer2.Size = new System.Drawing.Size(2054, 510);
             this.splitContainer2.SplitterDistance = 1080;
             this.splitContainer2.TabIndex = 2;
             // 
@@ -324,7 +328,7 @@ namespace Redmine_sync.GUI
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(1080, 449);
+            this.dataGridView1.Size = new System.Drawing.Size(1080, 510);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dataGridView1.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridView1_DataBindingComplete);
@@ -461,7 +465,7 @@ namespace Redmine_sync.GUI
             "On Hold"});
             this.checkedListBox1.Location = new System.Drawing.Point(1256, 18);
             this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(241, 140);
+            this.checkedListBox1.Size = new System.Drawing.Size(241, 174);
             this.checkedListBox1.TabIndex = 16;
             this.checkedListBox1.SelectedIndexChanged += new System.EventHandler(this.checkedListBox1_SelectedIndexChanged);
             // 
@@ -615,11 +619,31 @@ namespace Redmine_sync.GUI
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // btnSelectAll
+            // 
+            this.btnSelectAll.Location = new System.Drawing.Point(1503, 15);
+            this.btnSelectAll.Name = "btnSelectAll";
+            this.btnSelectAll.Size = new System.Drawing.Size(162, 23);
+            this.btnSelectAll.TabIndex = 18;
+            this.btnSelectAll.Text = "Select all";
+            this.btnSelectAll.UseVisualStyleBackColor = true;
+            this.btnSelectAll.Click += new System.EventHandler(this.btnSelectAll_Click);
+            // 
+            // btnClearAll
+            // 
+            this.btnClearAll.Location = new System.Drawing.Point(1503, 43);
+            this.btnClearAll.Name = "btnClearAll";
+            this.btnClearAll.Size = new System.Drawing.Size(162, 23);
+            this.btnClearAll.TabIndex = 19;
+            this.btnClearAll.Text = "Clear all";
+            this.btnClearAll.UseVisualStyleBackColor = true;
+            this.btnClearAll.Click += new System.EventHandler(this.btnClearAll_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(2054, 680);
+            this.ClientSize = new System.Drawing.Size(2054, 766);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -702,5 +726,7 @@ namespace Redmine_sync.GUI
         private System.Windows.Forms.DataGridViewTextBoxColumn RM_ASSIGNED;
         private System.Windows.Forms.DataGridViewTextBoxColumn RM_STATUS;
         private System.Windows.Forms.DataGridViewButtonColumn AUTO_ACTION;
+        private System.Windows.Forms.Button btnSelectAll;
+        private System.Windows.Forms.Button btnClearAll;
     }
 }

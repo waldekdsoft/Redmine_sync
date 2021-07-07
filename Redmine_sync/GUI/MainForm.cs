@@ -578,5 +578,22 @@ namespace Redmine_sync.GUI
             return false;
         }
 
+        private void SelectDeselectItems(bool select)
+        {
+            for (int i = 0; i < checkedListBox1.Items.Count; i++)
+            {
+                checkedListBox1.SetItemChecked(i, select);
+            }
+        }
+
+        private void btnSelectAll_Click(object sender, EventArgs e)
+        {
+            SelectDeselectItems(true);
+        }
+
+        private void btnClearAll_Click(object sender, EventArgs e)
+        {
+            SelectDeselectItems(false);
+        }
     }
 }

@@ -37,7 +37,8 @@ namespace Redmine_sync
             { "L081@SCPMG", new MOMEnvSettings("lxc081.softsystem.pl:8265") } ,
             { "Q16@MAYO", new MOMEnvSettings("wp16.softsystem.pl:7700") } ,
             { "Q448@Generic", new MOMEnvSettings("wp448.softsystem.pl:7700") } ,            
-            { "L014@MACBI", new MOMEnvSettings("lxc014.softsystem.pl:8425") }
+            { "L014@MACBI", new MOMEnvSettings("lxc014.softsystem.pl:8425") },
+            { "Q414@CHUR", new MOMEnvSettings("wp414.softsystem.pl:7700") }
         };
 
         public MOMActionsManager(IOutputable out1)
