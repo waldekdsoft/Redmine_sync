@@ -9,6 +9,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Diagnostics;
 using System.Net;
+using System.Text;
 using System.Windows.Forms;
 
 namespace Redmine_sync.GUI
@@ -21,6 +22,8 @@ namespace Redmine_sync.GUI
 
         CheckBox testModeCheckBox = null;
         CheckBox redisStoreCheckBox = null;
+
+        StringBuilder writeLineBuffer = new StringBuilder();
 
         public MainForm()
         {
@@ -60,9 +63,28 @@ namespace Redmine_sync.GUI
         {
             string msg = string.Format(line, args);
             tbMainOutput.AppendText(msg);
+           /* 
+            tbMainOutput.Invoke(new MethodInvoker(delegate {
+                tbMainOutput.AppendText(msg);
+            }));            
+           */
         }
 
-        
+        public void FlushWriteLines()
+        {
+            tbMainOutput.Invoke(new MethodInvoker(delegate {
+                tbMainOutput.AppendText(writeLineBuffer.ToString());
+                writeLineBuffer.Clear();
+            }));
+        }
+
+        public void WriteLineToBuffer(string line, params object[] args)
+        {
+            string msg = string.Format(line, args);
+            writeLineBuffer.Append(msg);
+        }
+
+
 
         private void showSyncInfoToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -267,6 +289,9 @@ namespace Redmine_sync.GUI
             PrintCurrentTime();
             TMSTaskSynchronizer tmsTaskSynchronizer = TMSTaskSynchronizer.GetInstance("MACBI", this);
             tmsTaskSynchronizer.ClearCache();
+            dataGridView1.DataSource = null;
+            dataGridView1.Refresh();
+
         }
 
         private void cb_CheckedChanged(object sender, EventArgs e)
@@ -595,5 +620,7 @@ namespace Redmine_sync.GUI
         {
             SelectDeselectItems(false);
         }
+
+      
     }
 }

@@ -14,7 +14,11 @@ namespace Redmine_sync.GUI
 
         void WriteToGrid(DataTable dt);
 
+        void FlushWriteLines();
+
+        void WriteLineToBuffer(string s, params object[] args);
+
         bool GetIsRedisUse();
-        //void WriteToGrid(DataSource ds);
+        //void WriteToGrid(DataSource ds);  
     }
 }

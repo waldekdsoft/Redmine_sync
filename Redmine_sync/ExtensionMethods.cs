@@ -126,8 +126,13 @@ namespace Redmine_sync
 
         public static void StopStopwatchAndPrintDoneMessageWithElapsedTime(this Stopwatch sw, IOutputable output)
         {
+            StopStopwatchAndPrintDoneMessageWithElapsedTime(sw, "done! ({0}s)", output);
+        }
+
+        public static void StopStopwatchAndPrintDoneMessageWithElapsedTime(this Stopwatch sw, string msg, IOutputable output)
+        {
             sw.Stop();
-            output.WriteLine("done! ({0}s)", sw.Elapsed.TotalSeconds);
+            output.WriteLine("{0} ({1}s)", msg, sw.Elapsed.TotalSeconds);
         }
 
 

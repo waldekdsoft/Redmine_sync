@@ -65,6 +65,8 @@ namespace Redmine_sync.GUI
             this.AUTO_ACTION = new System.Windows.Forms.DataGridViewButtonColumn();
             this.tMSWithReasonBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.mainDS = new Redmine_sync.DataSets.MainDS();
+            this.btnClearAll = new System.Windows.Forms.Button();
+            this.btnSelectAll = new System.Windows.Forms.Button();
             this.btnTest = new System.Windows.Forms.Button();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.cbDISP_ALL = new System.Windows.Forms.CheckBox();
@@ -81,8 +83,6 @@ namespace Redmine_sync.GUI
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.btnSelectAll = new System.Windows.Forms.Button();
-            this.btnClearAll = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -107,7 +107,7 @@ namespace Redmine_sync.GUI
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(2054, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(2054, 30);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -116,7 +116,7 @@ namespace Redmine_sync.GUI
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(55, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(55, 26);
             this.fileToolStripMenuItem.Text = "File...";
             // 
             // exitToolStripMenuItem
@@ -133,7 +133,7 @@ namespace Redmine_sync.GUI
             this.tMSToolStripMenuItem,
             this.rM2XLSToolStripMenuItem});
             this.actionsToolStripMenuItem.Name = "actionsToolStripMenuItem";
-            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
+            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(72, 26);
             this.actionsToolStripMenuItem.Text = "Actions";
             // 
             // mOMToolStripMenuItem
@@ -224,7 +224,7 @@ namespace Redmine_sync.GUI
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(73, 26);
             this.aboutToolStripMenuItem.Text = "About...";
             // 
             // tbMainOutput
@@ -235,7 +235,7 @@ namespace Redmine_sync.GUI
             this.tbMainOutput.Multiline = true;
             this.tbMainOutput.Name = "tbMainOutput";
             this.tbMainOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbMainOutput.Size = new System.Drawing.Size(970, 510);
+            this.tbMainOutput.Size = new System.Drawing.Size(970, 508);
             this.tbMainOutput.TabIndex = 1;
             // 
             // statusStrip1
@@ -257,7 +257,7 @@ namespace Redmine_sync.GUI
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 28);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 30);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -285,8 +285,8 @@ namespace Redmine_sync.GUI
             this.splitContainer1.Panel2.Controls.Add(this.button3);
             this.splitContainer1.Panel2.Controls.Add(this.button2);
             this.splitContainer1.Panel2.Controls.Add(this.button1);
-            this.splitContainer1.Size = new System.Drawing.Size(2054, 716);
-            this.splitContainer1.SplitterDistance = 510;
+            this.splitContainer1.Size = new System.Drawing.Size(2054, 714);
+            this.splitContainer1.SplitterDistance = 508;
             this.splitContainer1.TabIndex = 3;
             // 
             // splitContainer2
@@ -302,7 +302,7 @@ namespace Redmine_sync.GUI
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tbMainOutput);
-            this.splitContainer2.Size = new System.Drawing.Size(2054, 510);
+            this.splitContainer2.Size = new System.Drawing.Size(2054, 508);
             this.splitContainer2.SplitterDistance = 1080;
             this.splitContainer2.TabIndex = 2;
             // 
@@ -328,7 +328,7 @@ namespace Redmine_sync.GUI
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(1080, 510);
+            this.dataGridView1.Size = new System.Drawing.Size(1080, 508);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dataGridView1.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridView1_DataBindingComplete);
@@ -439,6 +439,26 @@ namespace Redmine_sync.GUI
             // 
             this.mainDS.DataSetName = "MainDS";
             this.mainDS.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // btnClearAll
+            // 
+            this.btnClearAll.Location = new System.Drawing.Point(1503, 43);
+            this.btnClearAll.Name = "btnClearAll";
+            this.btnClearAll.Size = new System.Drawing.Size(162, 23);
+            this.btnClearAll.TabIndex = 19;
+            this.btnClearAll.Text = "Clear all";
+            this.btnClearAll.UseVisualStyleBackColor = true;
+            this.btnClearAll.Click += new System.EventHandler(this.btnClearAll_Click);
+            // 
+            // btnSelectAll
+            // 
+            this.btnSelectAll.Location = new System.Drawing.Point(1503, 15);
+            this.btnSelectAll.Name = "btnSelectAll";
+            this.btnSelectAll.Size = new System.Drawing.Size(162, 23);
+            this.btnSelectAll.TabIndex = 18;
+            this.btnSelectAll.Text = "Select all";
+            this.btnSelectAll.UseVisualStyleBackColor = true;
+            this.btnSelectAll.Click += new System.EventHandler(this.btnSelectAll_Click);
             // 
             // btnTest
             // 
@@ -618,26 +638,6 @@ namespace Redmine_sync.GUI
             this.button1.Text = "MOM: Add new items (moms.xml)";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // btnSelectAll
-            // 
-            this.btnSelectAll.Location = new System.Drawing.Point(1503, 15);
-            this.btnSelectAll.Name = "btnSelectAll";
-            this.btnSelectAll.Size = new System.Drawing.Size(162, 23);
-            this.btnSelectAll.TabIndex = 18;
-            this.btnSelectAll.Text = "Select all";
-            this.btnSelectAll.UseVisualStyleBackColor = true;
-            this.btnSelectAll.Click += new System.EventHandler(this.btnSelectAll_Click);
-            // 
-            // btnClearAll
-            // 
-            this.btnClearAll.Location = new System.Drawing.Point(1503, 43);
-            this.btnClearAll.Name = "btnClearAll";
-            this.btnClearAll.Size = new System.Drawing.Size(162, 23);
-            this.btnClearAll.TabIndex = 19;
-            this.btnClearAll.Text = "Clear all";
-            this.btnClearAll.UseVisualStyleBackColor = true;
-            this.btnClearAll.Click += new System.EventHandler(this.btnClearAll_Click);
             // 
             // MainForm
             // 

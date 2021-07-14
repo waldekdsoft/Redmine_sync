@@ -17,6 +17,11 @@ namespace Redmine_sync.GUI
             InitializeComponent();
         }
 
+        public void FlushWriteLines()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool GetIsRedisUse()
         {
             throw new NotImplementedException();
@@ -28,6 +33,11 @@ namespace Redmine_sync.GUI
         }
 
         public void WriteLine(string s, params object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteLineToBuffer(string s, params object[] args)
         {
             throw new NotImplementedException();
         }

@@ -9,6 +9,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Redmine_sync
 {
@@ -146,29 +147,67 @@ namespace Redmine_sync
         public void GetherSyncData()
         {
             output.WriteLine("Gethering of synchronization data for {0} started...", this.client);
+            bool tmsRefreshNeeded = dbTMSDict == null;
+            bool rmRefreshNeeded = rmTMSDict == null;
+
+            Task<TMSDictionary> tmsTask = null;
+            Task<TMSDictionary> rmTask = null;
+
 
             if (dbTMSDict == null)
             {
-                dbTMSDict = GetTMSDataFromDB();
+                Stopwatch sw_tmsTask = new Stopwatch();
+                sw_tmsTask.Start();
+                tmsTask = Task.Factory.StartNew<TMSDictionary>(() =>
+                {
+                    return GetTMSDataFromDB();
+                }).ContinueWith<TMSDictionary>((x) => {
+                    sw_tmsTask.Stop();
+                    output.WriteLineToBuffer("Data from TMS read ({0}s)...", sw_tmsTask.Elapsed.TotalSeconds); return x.Result; 
+                });
+
             }
             else
             {
-                output.WriteLine("TMS dictionary already exists in memory...");
+                output.WriteLineToBuffer("Data from TMS already in cache...");
             }
+
 
             if (rmTMSDict == null)
             {
-                rmTMSDict = GetTMSDataFromRedMine(output);
+                Stopwatch sw_rmTask = new Stopwatch();
+                sw_rmTask.Start();
+                rmTask = Task.Factory.StartNew<TMSDictionary>(() =>
+                {
+                    return GetTMSDataFromRedMine(output);
+                }).ContinueWith<TMSDictionary>((x) => {
+                    sw_rmTask.Stop();
+                    output.WriteLineToBuffer("Data from RM read ({0}s)...", sw_rmTask.Elapsed.TotalSeconds); return x.Result; 
+                });
             }
-            //if (redMineTMSList == null)
-            //{
-            //    redMineTMSList = GetTMSDataFromRedMine();
-            //}
             else
             {
-                output.WriteLine("RM list already exists in memory...");
+                output.WriteLineToBuffer("Data from RM already in cache...");
             }
 
+            if (tmsTask != null && rmTask != null)
+            {
+                Task.WaitAll(new Task[] { tmsTask, rmTask });
+                dbTMSDict = tmsTask.Result;
+                rmTMSDict = rmTask.Result;
+            }
+            else if (tmsTask != null)
+            {
+                tmsTask.Wait();
+                dbTMSDict = tmsTask.Result;
+            }
+            else if(rmTask != null)
+            {
+                rmTask.Wait();
+                rmTMSDict = rmTask.Result;
+            }
+            
+           
             #region TO BE UNCOMMENTED 
 
             //foreach (var issue in RMManegerService.RMManager.GetObjects<Issue>(parameters).Where(issue => issue.Project.Id == TMS_PROJECT_ID))
@@ -198,8 +237,9 @@ namespace Redmine_sync
             //}
             #endregion
 
-            output.WriteLine("Gethering of synchronization data for {0} finished...", this.client);
 
+            output.WriteLineToBuffer("Gethering of synchronization data for {0} finished...", this.client);
+            output.FlushWriteLines();
             return;
         }
 
@@ -419,8 +459,8 @@ namespace Redmine_sync
 
         private static TMSDictionary GetTMSDataFromRedMine(IOutputable output)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.StartStopwatchAndPrintMessage("Getting TMS data from RedMine...", output);
+            //Stopwatch sw = new Stopwatch();
+            //sw.StartStopwatchAndPrintMessage("Getting TMS data from RedMine...", output);
             NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
             //List<TMSItem> redMineTMSList = new List<TMSItem>();
 
@@ -453,7 +493,7 @@ namespace Redmine_sync
                 dict = TMSDictionary.DeserializeTMSItemData(Consts.FILE_NAMES.RM_TMS_CACHE);
             }
 
-            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime(output);
+           // sw.StopStopwatchAndPrintDoneMessageWithElapsedTime("Getting TMS data from RedMine...done", output);
             return dict;
         }
 
@@ -522,27 +562,28 @@ namespace Redmine_sync
             DataTable tmsTasksFromDBDataTable = new DataTable();
             if (!Consts.TEST_MODE)
             {
-                sw.StartStopwatchAndPrintMessage("Getting TMS tasks from DB and making cache...", output);
+                //sw.StartStopwatchAndPrintMessage("Getting TMS tasks from DB and making cache...", output);
                 //Task<DataTable> execureQueryTask = DBService.ExecuteQueryAsync(DBService.GET_ALL_TMS_TASKS);
                 tmsTasksFromDBDataTable = DBService.ExecuteQuery(DBService.GET_ALL_TMS_TASKS);
                 tmsTasksFromDBDataTable.TableName = "TMS_DATA";
                 tmsTasksFromDBDataTable.WriteXml(Consts.FILE_NAMES.DB_TMS_CACHE);
+                //sw.StopStopwatchAndPrintDoneMessageWithElapsedTime("Getting TMS tasks from DB and making cache...done", output);
             }
             else
             {
-                sw.StartStopwatchAndPrintMessage("Getting TMS tasks from cache...", output);
+                //sw.StartStopwatchAndPrintMessage("Getting TMS tasks from cache...", output);
                 DataSet ds = new DataSet();
                 ds.ReadXml(Consts.FILE_NAMES.DB_TMS_CACHE, XmlReadMode.InferSchema);
                 tmsTasksFromDBDataTable = ds.Tables[0];
+                //sw.StopStopwatchAndPrintDoneMessageWithElapsedTime("Getting TMS tasks from cache...done", output);
             }
 
-            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime(output);
 
             //Dictionary<string, TMSItem> dbTMSDict = new Dictionary<string, TMSItem>();
             TMSDictionary dbTMSDict = new TMSDictionary();
             //List<string> team_members = TeamService.GetDEV1TeamMembersTMSLogins();
 
-            sw.StartStopwatchAndPrintMessage("Conversion DB items to objects...", output);
+            //sw.StartStopwatchAndPrintMessage("Conversion DB items to objects...", output);
             foreach (DataRow tmsTaskFromDB in tmsTasksFromDBDataTable.Rows)
             {
                 TMSItem item = new TMSItem();
@@ -558,7 +599,7 @@ namespace Redmine_sync
                 dbTMSDict.Add(item);
             }
 
-            sw.StopStopwatchAndPrintDoneMessageWithElapsedTime(output);
+            //sw.StopStopwatchAndPrintDoneMessageWithElapsedTime("Conversion DB items to objects...done", output);
             return dbTMSDict;
         }
 
@@ -584,7 +625,7 @@ namespace Redmine_sync
                 itemFromRM.Status = issue.Status.TryGetName();
             }
 
-            output.WriteLine("done!");
+            output.WriteLine("Cache creation...done!");
         }
     }
 }

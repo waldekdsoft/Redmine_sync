@@ -1,6 +1,7 @@
 ﻿using Redmine.Net.Api.Types;
 using Redmine_sync.Cache;
 using Redmine_sync.GUI;
+using Redmine_sync.Tools;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace Redmine_sync
         private static string MOM_FILE_PATH = MOM_FILES_DIR + @"\moms.xlsx";
         private static IDatabase cache = null;
 
+        private static Dictionary<string, MOMEnvSettings> MOM_ENV_SETTINGS;
+        /*
         private static Dictionary<string, MOMEnvSettings> MOM_ENV_SETTINGS = new Dictionary<string, MOMEnvSettings>() {
             { "L058@MACBI", new MOMEnvSettings("lxc058.softsystem.pl:7701") },
             { "L094@MACBI", new MOMEnvSettings("lxc094.softsystem.pl:8702") },
@@ -40,10 +43,16 @@ namespace Redmine_sync
             { "L014@MACBI", new MOMEnvSettings("lxc014.softsystem.pl:8425") },
             { "Q414@CHUR", new MOMEnvSettings("wp414.softsystem.pl:7700") }
         };
+        */
 
         public MOMActionsManager(IOutputable out1)
         {
             output = out1;
+        }
+
+        static MOMActionsManager()        
+        {
+            MOM_ENV_SETTINGS = EnvPropertiesFileReader.Read();
         }
 
         public void UpdateItems(bool allWithinDirectory = false)

@@ -161,6 +161,7 @@
     <Compile Include="TMS\TMSDictionary.cs" />
     <Compile Include="TMS\TMSItem.cs" />
     <Compile Include="TMS\TMSTaskSynchronizer.cs" />
+    <Compile Include="Tools\EnvPropertiesFileReader.cs" />
     <Compile Include="Users\User.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +176,9 @@
     </None>
     <None Include="DataSets\MainDS.xss">
       <DependentUpon>MainDS.xsd</DependentUpon>
+    </None>
+    <None Include="environments.properties">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
