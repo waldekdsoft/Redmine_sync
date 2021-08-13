@@ -607,7 +607,7 @@ namespace Redmine_sync
             output.Write("Cache creation...");
 
 //            Task<List<Issue>> issuesListFromRemineTask = CommonTools.GetIssuesFromRedmine(Consts.PROJECT_NAMES.TMS.MACBI.PROBLEMS);
-            List<Issue> issuesListFromRemine = CommonTools.GetIssuesFromRedmine(Consts.PROJECT_NAMES.TMS.MACBI.PROBLEMS);
+            List<Issue> issuesListFromRemine = CommonTools.GetIssuesFromRedmine(Consts.PROJECT_NAMES.TMS.MACBI.PROBLEMS, output);
 
             foreach (var issue in issuesListFromRemine)
             {

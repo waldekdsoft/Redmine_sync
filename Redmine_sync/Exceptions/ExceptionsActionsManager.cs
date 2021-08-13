@@ -31,7 +31,7 @@ namespace Redmine_sync
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();            
 
-            CreateExceptionsCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.EXCEPTIONS, output);
+            bool cachedReadOK = CreateExceptionsCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.EXCEPTIONS, output);
            // UpdateBasedOnExcelFile(issuesInRedmineProject, statItems, allWithinDirectory);
             //ShowStats(statItems, false);
         }
@@ -40,61 +40,74 @@ namespace Redmine_sync
         {
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
-            CreateExceptionsCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.EXCEPTIONS, output);
+            bool cacheReadOK = CreateExceptionsCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.EXCEPTIONS, output);
 
-            Dictionary<string /*env*/, FinalStatItem> finalStatDict = new Dictionary<string, FinalStatItem>();
-            GatherFullStats(issuesInRedmineProject, finalStatDict);
-            DisplayFullStats(finalStatDict);
+            if (cacheReadOK)
+            {
+                Dictionary<string /*env*/, FinalStatItem> finalStatDict = new Dictionary<string, FinalStatItem>();
+                GatherFullStats(issuesInRedmineProject, finalStatDict);
+                DisplayFullStats(finalStatDict);
+            }
         }
 
-        public static void CreateExceptionsCache(List<IssueItem> issuesInRedmineProject, List<IssueItem> problematicIssuesInRedmineProject, int project_id, IOutputable output)
+        public static bool CreateExceptionsCache(List<IssueItem> issuesInRedmineProject, List<IssueItem> problematicIssuesInRedmineProject, int project_id, IOutputable output)
         {
+            bool ret = true;
             output.Write("Cache creation...");
 
-            List<Issue> issuesListFromRemine = CommonTools.GetIssuesFromRedmine(project_id);
+            List<Issue> issuesListFromRemine = CommonTools.GetIssuesFromRedmine(project_id, output);
 
-            //if (output.GetIsRedisUse())
-            //{
-            //    cache = RedisConnectorHelper.Connection.GetDatabase();
-            //}
-
-            foreach (var issue in issuesListFromRemine.Where(issue => issue.Project.Id == project_id))
+            if (issuesListFromRemine != null)
             {
-                string subject = issue.Subject;
+                //if (output.GetIsRedisUse())
+                //{
+                //    cache = RedisConnectorHelper.Connection.GetDatabase();
+                //}
 
-                //split subject to get env and problem id
-                string[] subjectSplitted = subject.Split('-');
-
-                //get env
-                string env = subjectSplitted[0].Trim();
-
-                IssueItem item = new IssueItem();
-                item.Id = issue.Id;
-                item.Status = issue.Status.Name;
-                item.Desc = subject;
-                item.Env = env;
-
-                if (subjectSplitted.Length >= 4)
+                foreach (var issue in issuesListFromRemine.Where(issue => issue.Project.Id == project_id))
                 {
-                    //get MOM problem is from subject
-                    item.ProblemId = subjectSplitted[1].Trim();
+                    string subject = issue.Subject;
 
-                    //look for sender code
-                    if (subjectSplitted.Length >= 5)
+                    //split subject to get env and problem id
+                    string[] subjectSplitted = subject.Split('-');
+
+                    //get env
+                    string env = subjectSplitted[0].Trim();
+
+                    IssueItem item = new IssueItem();
+                    item.Id = issue.Id;
+                    item.Status = issue.Status.Name;
+                    item.Desc = subject;
+                    item.Env = env;
+
+                    if (subjectSplitted.Length >= 4)
                     {
-                        item.SenderCode = subjectSplitted[4].Trim();
+                        //get MOM problem is from subject
+                        item.ProblemId = subjectSplitted[1].Trim();
+
+                        //look for sender code
+                        if (subjectSplitted.Length >= 5)
+                        {
+                            item.SenderCode = subjectSplitted[4].Trim();
+                        }
+                        issuesInRedmineProject.Add(item);
+
+                        //cache.HashSetAsync("dd", "ddd", "ddd");
                     }
-                    issuesInRedmineProject.Add(item);
+                    else
+                    {
+                        problematicIssuesInRedmineProject.Add(item);
+                    }
+                }
 
-                    //cache.HashSetAsync("dd", "ddd", "ddd");
-                }
-                else
-                {
-                    problematicIssuesInRedmineProject.Add(item);
-                }
+                output.WriteLine("done!");
             }
-
-            output.WriteLine("done!");
+            else
+            {
+                output.WriteLine("not done due to RM exception!");
+                ret = false;
+            }
+            return ret;
         }
 
         private static void DisplayFullStats(Dictionary<string, FinalStatItem> finalStatDict)
@@ -143,7 +156,7 @@ namespace Redmine_sync
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
             List<string> envsNotExistingInConfigs = new List<string>();
 
-            CreateExceptionsCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.EXCEPTIONS, output);
+            bool cacehReadOK = CreateExceptionsCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.EXCEPTIONS, output);
            // ProcessExcelFile(issuesInRedmineProject, statItems, envsNotExistingInConfigs);
            // ShowStats(statItems, true, envsNotExistingInConfigs);
         }

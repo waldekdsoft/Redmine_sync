@@ -65,70 +65,87 @@ namespace Redmine_sync
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();            
 
-            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
-            UpdateBasedOnExcelFile(issuesInRedmineProject, statItems, allWithinDirectory);
-            ShowStats(statItems, false);
+            bool cacheOK = CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
+            if (cacheOK)
+            {
+                UpdateBasedOnExcelFile(issuesInRedmineProject, statItems, allWithinDirectory);
+                ShowStats(statItems, false);
+            }
         }
 
         public static void BuildFinalStats()
         {
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
-            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
+            bool cacheOK = CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
 
-            Dictionary<string /*env*/, FinalStatItem> finalStatDict = new Dictionary<string, FinalStatItem>();
-            GatherFullStats(issuesInRedmineProject, finalStatDict);
-            DisplayFullStats(finalStatDict);
+            if (cacheOK)
+            {
+                Dictionary<string /*env*/, FinalStatItem> finalStatDict = new Dictionary<string, FinalStatItem>();
+                GatherFullStats(issuesInRedmineProject, finalStatDict);
+                DisplayFullStats(finalStatDict);
+            }
         }
 
-        public static void CreateMOMCache(List<IssueItem> issuesInRedmineProject, List<IssueItem> problematicIssuesInRedmineProject, int project_id, IOutputable output)
+        public static bool CreateMOMCache(List<IssueItem> issuesInRedmineProject, List<IssueItem> problematicIssuesInRedmineProject, int project_id, IOutputable output)
         {
+            bool ret = true;
             output.Write("Cache creation...");
 
-            List<Issue> issuesListFromRemine = CommonTools.GetIssuesFromRedmine(project_id);
+            List<Issue> issuesListFromRemine = CommonTools.GetIssuesFromRedmine(project_id, output);
 
-            if (output.GetIsRedisUse())
+            if (issuesListFromRemine != null)
             {
-                cache = RedisConnectorHelper.Connection.GetDatabase();
-            }
 
-            foreach (var issue in issuesListFromRemine.Where(issue => issue.Project.Id == project_id))
-            {
-                string subject = issue.Subject;
-
-                //split subject to get env and problem id
-                string[] subjectSplitted = subject.Split('-');
-
-                //get env
-                string env = subjectSplitted[0].Trim();
-
-                IssueItem item = new IssueItem();
-                item.Id = issue.Id;
-                item.Status = issue.Status.Name;
-                item.Desc = subject;
-                item.Env = env;
-
-                if (subjectSplitted.Length >= 4)
+                if (output.GetIsRedisUse())
                 {
-                    //get MOM problem is from subject
-                    item.ProblemId = subjectSplitted[1].Trim();
+                    cache = RedisConnectorHelper.Connection.GetDatabase();
+                }
 
-                    //look for sender code
-                    if (subjectSplitted.Length >= 5)
+                foreach (var issue in issuesListFromRemine.Where(issue => issue.Project.Id == project_id))
+                {
+                    string subject = issue.Subject;
+
+                    //split subject to get env and problem id
+                    string[] subjectSplitted = subject.Split('-');
+
+                    //get env
+                    string env = subjectSplitted[0].Trim();
+
+                    IssueItem item = new IssueItem();
+                    item.Id = issue.Id;
+                    item.Status = issue.Status.Name;
+                    item.Desc = subject;
+                    item.Env = env;
+
+                    if (subjectSplitted.Length >= 4)
                     {
-                        item.SenderCode = subjectSplitted[4].Trim();
+                        //get MOM problem is from subject
+                        item.ProblemId = subjectSplitted[1].Trim();
+
+                        //look for sender code
+                        if (subjectSplitted.Length >= 5)
+                        {
+                            item.SenderCode = subjectSplitted[4].Trim();
+                        }
+                        issuesInRedmineProject.Add(item);
+
+                        //cache.HashSetAsync("dd", "ddd", "ddd");
                     }
-                    issuesInRedmineProject.Add(item);
+                    else
+                    {
+                        problematicIssuesInRedmineProject.Add(item);
+                    }
+                }
 
-                    //cache.HashSetAsync("dd", "ddd", "ddd");
-                }
-                else
-                {
-                    problematicIssuesInRedmineProject.Add(item);
-                }
+                output.WriteLine("done!");
             }
-
-            output.WriteLine("done!");
+            else
+            {
+                output.WriteLine("not done due to RM exception!");
+                ret = false;
+            }
+            return ret;
         }
 
         private static void DisplayFullStats(Dictionary<string, FinalStatItem> finalStatDict)
@@ -177,9 +194,12 @@ namespace Redmine_sync
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
             List<string> envsNotExistingInConfigs = new List<string>();
 
-            CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
-            ProcessExcelFile(issuesInRedmineProject, statItems, envsNotExistingInConfigs);
-            ShowStats(statItems, true, envsNotExistingInConfigs);
+            bool cacheOK = CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
+            if (cacheOK)
+            {
+                ProcessExcelFile(issuesInRedmineProject, statItems, envsNotExistingInConfigs);
+                ShowStats(statItems, true, envsNotExistingInConfigs);
+            }
         }
 
         public void AddNewItemsFromTXT()
@@ -189,9 +209,12 @@ namespace Redmine_sync
             List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
             List<string> envsNotExistingInConfigs = new List<string>();
 
-           CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
-            ProcessTxtFile(issuesInRedmineProject, statItems, envsNotExistingInConfigs);
-            ShowStats(statItems, true, envsNotExistingInConfigs);
+            bool cacheOK = CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
+            if (cacheOK)
+            {
+                ProcessTxtFile(issuesInRedmineProject, statItems, envsNotExistingInConfigs);
+                ShowStats(statItems, true, envsNotExistingInConfigs);
+            }
         }
 
         private static void ProcessExcelFile(List<IssueItem> issuesInRedmineProject, List<StatItem> statItems, List<string> envsNotExistingInConfigs)

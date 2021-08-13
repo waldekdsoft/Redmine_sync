@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Redmine.Net.Api.Async;
+using Redmine.Net.Api.Exceptions;
 
 namespace Redmine_sync
 {
@@ -41,12 +42,38 @@ namespace Redmine_sync
             return ret;
         }
 
-        public static List<Issue> GetIssuesFromRedmine(int project_id)
+        public static List<Issue> GetIssuesFromRedmine(int project_id, GUI.IOutputable output)
         {
+            List<Issue> ret = null;
             //NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
             NameValueCollection parameters = new NameValueCollection { { "project_id", project_id.ToString() } };
 
-            return RMManegerService.RMManager.GetObjects<Issue>(parameters);
+            int trials = 3;
+
+
+            while (trials > 0)
+            {
+                try
+                {
+                    ret = RMManegerService.RMManager.GetObjects<Issue>(parameters);
+                }
+                catch (RedmineException ex)
+                {
+                    trials--;
+                    output.WriteLine("Redmine exception occured! - trying again...");
+                }
+
+                if (ret != null)
+                    break;
+            }
+
+            if(trials == 0)
+            {
+                output.WriteLine("Not able to read due to exceptions!");
+            }
+            
+
+            return ret;
         }
 
         public static List<Issue> GetIssuesFromRedmineWD(int project_id)
