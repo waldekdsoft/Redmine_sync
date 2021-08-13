@@ -37,7 +37,7 @@ namespace Redmine_sync.GUI
 
         private void addNewItemsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AddNewItems();
+            AddNewItemsFromExcel();
         }
 
       
@@ -214,7 +214,7 @@ namespace Redmine_sync.GUI
         private void button1_Click(object sender, EventArgs e)
         {
             PrintCurrentTime();
-            AddNewItems();
+            AddNewItemsFromExcel();
         }
 
         private void ShowSyncInfo()
@@ -232,11 +232,17 @@ namespace Redmine_sync.GUI
             ShowSyncInfo();
         }
 
-        private void AddNewItems()
+        private void AddNewItemsFromExcel()
         {
             MOMActionsManager mom = new MOMActionsManager(this);
-            mom.AddNewItems();
+            mom.AddNewItemsFromExcel();
         }
+        private void AddNewItemsFromTXT()
+        {
+            MOMActionsManager mom = new MOMActionsManager(this);
+            mom.AddNewItemsFromTXT();
+        }
+
         private void AddRMDataToDatabse()
         {
             RM2XLSManager manager = new RM2XLSManager(this);
@@ -621,6 +627,24 @@ namespace Redmine_sync.GUI
             SelectDeselectItems(false);
         }
 
-      
+        private void btnAddExceptionsToRM_Click(object sender, EventArgs e)
+        {
+            PrintCurrentTime();
+            AddNewExceptionItems();
+        }
+
+        private void AddNewExceptionItems()
+        {
+            ExceptionsActionsManager eam = new ExceptionsActionsManager(this);
+            eam.AddNewItems();
+
+        }
+
+        private void btnAddMOMItemsTXT_Click(object sender, EventArgs e)
+        {
+            PrintCurrentTime();
+            AddNewItemsFromTXT();
+
+        }
     }
 }

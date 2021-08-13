@@ -35,7 +35,7 @@ namespace Redmine_sync
 
         public static async Task<List<Issue>> GetIssuesFromRedmineAsync(int project_id)
         {
-            NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
+            NameValueCollection parameters = new NameValueCollection { { "project_id", project_id.ToString() } };
 
             List<Issue> ret = await RMManegerService.RMManager.GetObjectsAsync<Issue>(parameters);
             return ret;
@@ -43,7 +43,15 @@ namespace Redmine_sync
 
         public static List<Issue> GetIssuesFromRedmine(int project_id)
         {
-            NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
+            //NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
+            NameValueCollection parameters = new NameValueCollection { { "project_id", project_id.ToString() } };
+
+            return RMManegerService.RMManager.GetObjects<Issue>(parameters);
+        }
+
+        public static List<Issue> GetIssuesFromRedmineWD(int project_id)
+        {
+            NameValueCollection parameters = new NameValueCollection { { "project_id", project_id.ToString() } };
 
             return RMManegerService.RMManager.GetObjects<Issue>(parameters);
         }

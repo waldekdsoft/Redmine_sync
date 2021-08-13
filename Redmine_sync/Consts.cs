@@ -63,6 +63,8 @@ namespace Redmine_sync
                 public static int PROBLEMS = 65;
                 public static int TEMPORARY_PROBLEMS = 67;
             }
+
+            public static int EXCEPTIONS = 101;
         }
         //"macbi-problems" 15
         //"temporary-macbi-problems" 74

@@ -1,6 +1,7 @@
 ﻿using Redmine.Net.Api.Types;
 using Redmine_sync.Cache;
 using Redmine_sync.GUI;
+using Redmine_sync.MOM;
 using Redmine_sync.Tools;
 using StackExchange.Redis;
 using System;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Redmine_sync
@@ -16,8 +18,10 @@ namespace Redmine_sync
     {
         static IOutputable output = null;
 
-        private static string MOM_FILES_DIR = @"C:\Users\waldekd\Documents\MOMProblems";
-        private static string MOM_FILE_PATH = MOM_FILES_DIR + @"\moms.xlsx";
+        private static string FILES_DIR = @"C:\Users\waldekd\Documents\MOMProblems";
+        private static string MOM_FILE_PATH = FILES_DIR + @"\moms.xlsx";
+        private static string TXT_FILE_PATH = FILES_DIR + @"\moms.txt";
+
         private static IDatabase cache = null;
 
         private static Dictionary<string, MOMEnvSettings> MOM_ENV_SETTINGS;
@@ -166,7 +170,7 @@ namespace Redmine_sync
             }
         }
 
-        public void AddNewItems()
+        public void AddNewItemsFromExcel()
         {
             List<StatItem> statItems = new List<StatItem>();
             List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
@@ -175,6 +179,18 @@ namespace Redmine_sync
 
             CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
             ProcessExcelFile(issuesInRedmineProject, statItems, envsNotExistingInConfigs);
+            ShowStats(statItems, true, envsNotExistingInConfigs);
+        }
+
+        public void AddNewItemsFromTXT()
+        {
+            List<StatItem> statItems = new List<StatItem>();
+            List<IssueItem> issuesInRedmineProject = new List<IssueItem>();
+            List<IssueItem> problematicIssuesInRedmineProject = new List<IssueItem>();
+            List<string> envsNotExistingInConfigs = new List<string>();
+
+           CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
+            ProcessTxtFile(issuesInRedmineProject, statItems, envsNotExistingInConfigs);
             ShowStats(statItems, true, envsNotExistingInConfigs);
         }
 
@@ -252,6 +268,150 @@ namespace Redmine_sync
             }
         }
 
+        private static void ProcessTxtFile(List<IssueItem> issuesInRedmineProject, List<StatItem> statItems, List<string> envsNotExistingInConfigs)
+        {
+            //********************************************************************************************************/
+            //read data from Excel
+            var txt = System.IO.File.ReadAllLines(TXT_FILE_PATH);
+            string env = string.Empty;
+            Dictionary<string, List<MOMItem>> mom_items_dict = new Dictionary<string, List<MOMItem>>();
+
+            foreach (string line in txt.Where(line => !string.IsNullOrWhiteSpace(line)))
+            {
+                string[] splitted_line = line.Split(' ');
+                string first_word = string.Empty;
+
+                if (splitted_line.Count() > 1)
+                {
+                    first_word = splitted_line[0];
+                }
+
+                if (!string.IsNullOrWhiteSpace(first_word))
+                {
+                    if (first_word == "Environment:")
+                    {
+                        env = splitted_line[1].Trim();
+                        continue;
+                    }
+                    else if (Regex.IsMatch(line, @"^\d"))
+                    {
+                        MOMItem momitem = new MOMItem();
+
+                        string problemId = splitted_line[0];
+                        momitem.ProblemID = problemId;
+
+                        string[] mom_message_splitted = line.Split('\t');
+
+                        //problem link
+                        //7228 <http://lxc014.softsystem.pl:8425/mom/console/problem_search.jsp?messageId=8741440&status=ALL>
+                        string problemid_with_problemlink = mom_message_splitted[0];
+                        string problemlink = problemid_with_problemlink.Trim().Split(' ')[1].Replace("<", "").Replace(">", "");
+                        momitem.ProblemLink = problemlink;
+
+                        momitem.ProblemCode = mom_message_splitted[4];
+
+                        //message id + message link
+                        string[] messageid_with_messagelink_splitted = mom_message_splitted[5].Trim().Split(' ');
+                        string messageId = messageid_with_messagelink_splitted[0];
+                        string messagelink = messageid_with_messagelink_splitted[1].Replace("<", "").Replace(">", "");
+                        momitem.MessageId = messageId;
+                        momitem.MessageLink = messagelink;
+
+                        string eventCode = mom_message_splitted[8];
+                        momitem.EventCode = eventCode;
+
+                        string details = mom_message_splitted[10];
+                        momitem.Details = details;
+
+                        string senderCode = mom_message_splitted[7];
+                        momitem.SenderCode = senderCode;
+
+                        if (!mom_items_dict.ContainsKey(env))
+                        {
+                            List<MOMItem> items = new List<MOMItem>();
+                            items.Add(momitem);
+                            mom_items_dict.Add(env, items);
+                        }
+                        else
+                        {
+                            mom_items_dict[env].Add(momitem);
+                        }
+                    }
+                }
+            }
+
+            foreach (string envName in mom_items_dict.Keys)
+            {
+                output.WriteLine("--------------------------------------------");
+                output.WriteLine("Processing of {0}...", envName);
+                output.WriteLine("--------------------------------------------");
+
+                MOMEnvSettings momEnvSettings = null;
+                if (!MOM_ENV_SETTINGS.TryGetValue(envName, out momEnvSettings))
+                {
+                    output.WriteLine("No MOMEnvSettings for {0}", envName);
+                    envsNotExistingInConfigs.Add(envName);
+                }
+                else
+                {
+                    output.WriteLine("Start processing: {0}", envName);
+
+                    StatItem statItem = new StatItem();
+                    statItem.Env = envName;
+
+                    /*
+                    var query =
+                      from row in xlsx.Worksheet(envName)
+                      let item = new
+                      {
+                          ProblemID = row["Problem ID"].Cast<string>(),
+                          ProblemCode = row["Problem Code"].Cast<string>(),
+                          MessageId = row["Message ID"].Cast<string>(),
+                          EventCode = row["Event Code"].Cast<string>(),
+                          Details = row["Details"].Cast<string>(),
+                          SenderCode = row["Sender Code"].Cast<string>(),
+                      }
+                      select item;
+                    */
+
+                    IdentifiableName p = IdentifiableName.Create<Project>(Consts.PROJECT_NAMES.MOM.PROBLEMS);
+                    foreach (var itemFromTxt in mom_items_dict[envName])
+                    {
+                        string subject = string.Format("{0} - {1} - {2} - {3} - {4}", envName, itemFromTxt.ProblemID, itemFromTxt.EventCode, itemFromTxt.ProblemCode, itemFromTxt.SenderCode);
+
+                        //check if such the item exists in the Redmine project
+                        var redmineIssue = issuesInRedmineProject.Where(issueFromRedmine => issueFromRedmine.Env == envName && issueFromRedmine.ProblemId == itemFromTxt.ProblemID);
+                        if (redmineIssue.Count() == 0)
+                        {
+                            string details = string.Format("{0}\r\nMessage link: {1}\r\nProblem link: {2}", itemFromTxt.Details, itemFromTxt.MessageLink, itemFromTxt.ProblemLink);
+
+                            var newIssue = new Issue { Subject = subject, Project = p, Description = details };
+                            RMManegerService.RMManager.CreateObject(newIssue);
+
+                            //add a new item to local cached items from redmine
+                            IssueItem item = new IssueItem();
+
+                            item.Env = envName;
+                            item.ProblemId = itemFromTxt.ProblemID;
+
+                            issuesInRedmineProject.Add(item);
+
+                            statItem.Added++;
+                        }
+                        else
+                        {
+                            output.WriteLine("Issue exists! {0}", subject);
+                            statItem.AlreadyExisted++;
+                        }
+                    }
+                    statItems.Add(statItem);
+                }
+            }
+
+        }
+
+
+
         private static void ShowStats(List<StatItem> statItems, bool added, List<string> envsNotExistingInConfigs = null)
         {
             output.WriteLine("--------------------------------------------");
@@ -288,7 +448,7 @@ namespace Redmine_sync
             List<string> filesToProcess = null;
             if (allWithinDirectory)
             {
-                filesToProcess = Directory.EnumerateFiles(MOM_FILES_DIR, "*.xlsx").ToList();
+                filesToProcess = Directory.EnumerateFiles(FILES_DIR, "*.xlsx").ToList();
             }
             else
             {

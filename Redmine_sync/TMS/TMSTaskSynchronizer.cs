@@ -461,13 +461,12 @@ namespace Redmine_sync
         {
             //Stopwatch sw = new Stopwatch();
             //sw.StartStopwatchAndPrintMessage("Getting TMS data from RedMine...", output);
-            NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
-            //List<TMSItem> redMineTMSList = new List<TMSItem>();
+            NameValueCollection parameters = new NameValueCollection { { "project_id", Consts.PROJECT_NAMES.TMS.MACBI.PROBLEMS.ToString() } };
 
             TMSDictionary dict = new TMSDictionary();
             if (!Consts.TEST_MODE)
             {
-                foreach (var issue in RMManegerService.RMManager.GetObjects<Issue>(parameters).Where(issue => issue.Project.Id == Consts.PROJECT_NAMES.TMS.MACBI.PROBLEMS))
+                foreach (var issue in RMManegerService.RMManager.GetObjects<Issue>(parameters))
                 {
                    /*string subject = issue.Subject;
 
@@ -606,7 +605,6 @@ namespace Redmine_sync
         public static void CreateTMSCache(IOutputable output)
         {
             output.Write("Cache creation...");
-            //NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
 
 //            Task<List<Issue>> issuesListFromRemineTask = CommonTools.GetIssuesFromRedmine(Consts.PROJECT_NAMES.TMS.MACBI.PROBLEMS);
             List<Issue> issuesListFromRemine = CommonTools.GetIssuesFromRedmine(Consts.PROJECT_NAMES.TMS.MACBI.PROBLEMS);
