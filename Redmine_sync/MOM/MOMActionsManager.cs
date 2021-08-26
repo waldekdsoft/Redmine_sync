@@ -212,8 +212,10 @@ namespace Redmine_sync
             bool cacheOK = CreateMOMCache(issuesInRedmineProject, problematicIssuesInRedmineProject, Consts.PROJECT_NAMES.MOM.PROBLEMS, output);
             if (cacheOK)
             {
-                ProcessTxtFile(issuesInRedmineProject, statItems, envsNotExistingInConfigs);
-                ShowStats(statItems, true, envsNotExistingInConfigs);
+                if (ProcessTxtFile(issuesInRedmineProject, statItems, envsNotExistingInConfigs))
+                {
+                    ShowStats(statItems, true, envsNotExistingInConfigs);
+                }
             }
         }
 
@@ -291,7 +293,7 @@ namespace Redmine_sync
             }
         }
 
-        private static void ProcessTxtFile(List<IssueItem> issuesInRedmineProject, List<StatItem> statItems, List<string> envsNotExistingInConfigs)
+        private static bool ProcessTxtFile(List<IssueItem> issuesInRedmineProject, List<StatItem> statItems, List<string> envsNotExistingInConfigs)
         {
             //********************************************************************************************************/
             //read data from Excel
@@ -409,7 +411,25 @@ namespace Redmine_sync
                             string details = string.Format("{0}\r\nMessage link: {1}\r\nProblem link: {2}", itemFromTxt.Details, itemFromTxt.MessageLink, itemFromTxt.ProblemLink);
 
                             var newIssue = new Issue { Subject = subject, Project = p, Description = details };
-                            RMManegerService.RMManager.CreateObject(newIssue);
+                            int trialsNum = 3;
+                            while (trialsNum > 0)
+                            {
+                                try
+                                {
+                                    RMManegerService.RMManager.CreateObject(newIssue);
+                                    trialsNum = -1;
+                                }
+                                catch (Exception)
+                                {
+                                    output.WriteLine("RM exception occured...");
+                                    trialsNum--;
+                                }
+                            }
+
+                            if (trialsNum == 0)
+                            {
+                                return false;
+                            }
 
                             //add a new item to local cached items from redmine
                             IssueItem item = new IssueItem();
@@ -430,6 +450,7 @@ namespace Redmine_sync
                     statItems.Add(statItem);
                 }
             }
+            return true;
 
         }
 

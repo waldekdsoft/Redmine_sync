@@ -65,6 +65,7 @@ namespace Redmine_sync.GUI
             this.AUTO_ACTION = new System.Windows.Forms.DataGridViewButtonColumn();
             this.tMSWithReasonBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.mainDS = new Redmine_sync.DataSets.MainDS();
+            this.btnAddMOMItemsTXT = new System.Windows.Forms.Button();
             this.btnAddExceptionsToRM = new System.Windows.Forms.Button();
             this.btnClearAll = new System.Windows.Forms.Button();
             this.btnSelectAll = new System.Windows.Forms.Button();
@@ -84,7 +85,7 @@ namespace Redmine_sync.GUI
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.btnAddMOMItemsTXT = new System.Windows.Forms.Button();
+            this.btnCybersecurity = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -269,6 +270,7 @@ namespace Redmine_sync.GUI
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.btnCybersecurity);
             this.splitContainer1.Panel2.Controls.Add(this.btnAddMOMItemsTXT);
             this.splitContainer1.Panel2.Controls.Add(this.btnAddExceptionsToRM);
             this.splitContainer1.Panel2.Controls.Add(this.btnClearAll);
@@ -443,6 +445,16 @@ namespace Redmine_sync.GUI
             // 
             this.mainDS.DataSetName = "MainDS";
             this.mainDS.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // btnAddMOMItemsTXT
+            // 
+            this.btnAddMOMItemsTXT.Location = new System.Drawing.Point(12, 43);
+            this.btnAddMOMItemsTXT.Name = "btnAddMOMItemsTXT";
+            this.btnAddMOMItemsTXT.Size = new System.Drawing.Size(244, 29);
+            this.btnAddMOMItemsTXT.TabIndex = 21;
+            this.btnAddMOMItemsTXT.Text = "MOM: Add new items (moms.txt\r\n)";
+            this.btnAddMOMItemsTXT.UseVisualStyleBackColor = true;
+            this.btnAddMOMItemsTXT.Click += new System.EventHandler(this.btnAddMOMItemsTXT_Click);
             // 
             // btnAddExceptionsToRM
             // 
@@ -653,15 +665,15 @@ namespace Redmine_sync.GUI
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // btnAddMOMItemsTXT
+            // btnCybersecurity
             // 
-            this.btnAddMOMItemsTXT.Location = new System.Drawing.Point(12, 43);
-            this.btnAddMOMItemsTXT.Name = "btnAddMOMItemsTXT";
-            this.btnAddMOMItemsTXT.Size = new System.Drawing.Size(244, 29);
-            this.btnAddMOMItemsTXT.TabIndex = 21;
-            this.btnAddMOMItemsTXT.Text = "MOM: Add new items (moms.txt\r\n)";
-            this.btnAddMOMItemsTXT.UseVisualStyleBackColor = true;
-            this.btnAddMOMItemsTXT.Click += new System.EventHandler(this.btnAddMOMItemsTXT_Click);
+            this.btnCybersecurity.Location = new System.Drawing.Point(12, 128);
+            this.btnCybersecurity.Name = "btnCybersecurity";
+            this.btnCybersecurity.Size = new System.Drawing.Size(244, 29);
+            this.btnCybersecurity.TabIndex = 22;
+            this.btnCybersecurity.Text = "Cyber: update (cyber.xls)";
+            this.btnCybersecurity.UseVisualStyleBackColor = true;
+            this.btnCybersecurity.Click += new System.EventHandler(this.btnCybersecurity_Click);
             // 
             // MainForm
             // 
@@ -754,5 +766,6 @@ namespace Redmine_sync.GUI
         private System.Windows.Forms.Button btnClearAll;
         private System.Windows.Forms.Button btnAddExceptionsToRM;
         private System.Windows.Forms.Button btnAddMOMItemsTXT;
+        private System.Windows.Forms.Button btnCybersecurity;
     }
 }

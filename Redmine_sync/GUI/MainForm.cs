@@ -1,5 +1,6 @@
 ﻿using Redmine.Net.Api;
 using Redmine.Net.Api.Types;
+using Redmine_sync.Cybersecurity;
 using Redmine_sync.RM2XLS;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -644,6 +645,13 @@ namespace Redmine_sync.GUI
         {
             PrintCurrentTime();
             AddNewItemsFromTXT();
+
+        }
+
+        private void btnCybersecurity_Click(object sender, EventArgs e)
+        {
+            CyberActionsManager cam = new CyberActionsManager();
+            cam.LoadData();
 
         }
     }

@@ -129,6 +129,8 @@
     <Compile Include="Cache\RedisHelper.cs" />
     <Compile Include="CommonTools.cs" />
     <Compile Include="Consts.cs" />
+    <Compile Include="Cybersecurity\CyberActionsManager.cs" />
+    <Compile Include="Cybersecurity\CyberItem.cs" />
     <Compile Include="DataSets\MainDS.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
