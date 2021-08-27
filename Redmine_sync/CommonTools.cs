@@ -46,7 +46,7 @@ namespace Redmine_sync
         {
             List<Issue> ret = null;
             //NameValueCollection parameters = new NameValueCollection { { "status_id", "*" } };
-            NameValueCollection parameters = new NameValueCollection { { "project_id", project_id.ToString() } };
+            NameValueCollection parameters;
 
             int trials = 3;
 
@@ -55,6 +55,7 @@ namespace Redmine_sync
             {
                 try
                 {
+                    parameters = new NameValueCollection { { "project_id", project_id.ToString() } };
                     ret = RMManegerService.RMManager.GetObjects<Issue>(parameters);
                 }
                 catch (RedmineException ex)
